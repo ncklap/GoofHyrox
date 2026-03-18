@@ -1,0 +1,132 @@
+.page {
+  max-width: 390px;
+  margin: 0 auto;
+  padding: 16px 16px 80px;
+  min-height: 100dvh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.backLink {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--muted2);
+  text-decoration: none;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.input {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--accent-green);
+}
+
+.input:disabled {
+  opacity: 0.5;
+}
+
+.input::placeholder {
+  color: var(--muted);
+}
+
+.saveBtn {
+  background: var(--accent-green);
+  color: var(--bg);
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.saveBtn:disabled {
+  opacity: 0.7;
+}
+
+.signOutBtn {
+  width: 100%;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  color: var(--accent-red);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.85rem;
+  cursor: pointer;
+  margin-top: 24px;
+}
+
+.nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 390px;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  display: flex;
+  padding: 10px 0;
+  z-index: 50;
+}
+
+.navLink {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 4px 0;
+}
+
+.navLink.active {
+  color: var(--accent-green);
+}

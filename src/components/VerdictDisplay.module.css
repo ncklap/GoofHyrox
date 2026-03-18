@@ -1,0 +1,37 @@
+.container {
+  text-align: center;
+  padding: 24px 0 16px;
+}
+
+.label {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: var(--muted2);
+  margin: 0 0 8px;
+  text-transform: uppercase;
+}
+
+.verdict {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+  line-height: 1.2;
+}
+
+.score {
+  margin: 0;
+  font-family: var(--font-body);
+}
+
+.scoreValue {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.scoreMax {
+  font-size: 1rem;
+  color: var(--muted);
+}

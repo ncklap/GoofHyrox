@@ -1,0 +1,27 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.track {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-card2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.pct {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--muted2);
+  min-width: 36px;
+  text-align: right;
+}

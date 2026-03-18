@@ -1,0 +1,70 @@
+.heading {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 10px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.label {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.time {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.deleteBtn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.deleteBtn:hover {
+  color: var(--accent-red);
+  background: rgba(255, 77, 109, 0.1);
+}
+
+.empty {
+  text-align: center;
+  padding: 24px 0;
+}
+
+.empty p {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--muted);
+  margin: 0;
+}

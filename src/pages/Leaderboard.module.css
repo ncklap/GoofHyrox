@@ -1,0 +1,150 @@
+.page {
+  max-width: 390px;
+  margin: 0 auto;
+  padding: 16px 16px 80px;
+  min-height: 100dvh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.backLink {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--muted2);
+  text-decoration: none;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px 0;
+  font-family: var(--font-body);
+  color: var(--muted);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.currentRow {
+  border-color: var(--accent-green);
+  background: rgba(200, 241, 53, 0.05);
+}
+
+.rank {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--muted2);
+  min-width: 28px;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.7rem;
+  color: var(--text);
+  background: var(--bg-card2);
+  flex-shrink: 0;
+}
+
+.info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.nameRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.name {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.days {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+
+.verdict {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.empty {
+  text-align: center;
+  padding: 24px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 390px;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  display: flex;
+  padding: 10px 0;
+  z-index: 50;
+}
+
+.navLink {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 4px 0;
+}
+
+.navLink.active {
+  color: var(--accent-green);
+}

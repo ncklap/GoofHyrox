@@ -1,0 +1,22 @@
+.toast {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent-green);
+  color: var(--bg);
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.875rem;
+  z-index: 200;
+  animation: slideDown 0.3s ease;
+  max-width: 350px;
+  text-align: center;
+}
+
+@keyframes slideDown {
+  from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+  to { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
