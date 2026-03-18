@@ -1,0 +1,157 @@
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 13px 15px;
+  transition: border-color 0.2s, opacity 0.2s;
+}
+
+.missingCore {
+  border-color: rgba(255, 77, 109, 0.35);
+}
+
+.zeroScore {
+  opacity: 0.4;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 9px;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.icon {
+  font-size: 17px;
+  line-height: 1.2;
+  flex-shrink: 0;
+}
+
+.titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.name {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.tag {
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.tierPill {
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 7px 11px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted2);
+  line-height: 1;
+  margin-top: 2px;
+}
+
+.tier-0 {
+  color: var(--muted2);
+  background: transparent; /* NONE */
+  border-color: rgba(153, 153, 153, 0.35);
+}
+
+.tier-1 {
+  color: var(--accent-red);
+  background: rgba(255, 77, 109, 0.10); /* STARTER */
+  border-color: rgba(255, 77, 109, 0.35);
+}
+
+.tier-2 {
+  color: var(--accent-orange);
+  background: rgba(255, 140, 66, 0.10); /* BUILDING */
+  border-color: rgba(255, 140, 66, 0.35);
+}
+
+.tier-3 {
+  color: var(--accent-yellow);
+  background: rgba(255, 217, 61, 0.10); /* SOLID */
+  border-color: rgba(255, 217, 61, 0.35);
+}
+
+.tier-4 {
+  color: var(--accent-green);
+  background: rgba(200, 241, 53, 0.10); /* STRONG */
+  border-color: rgba(200, 241, 53, 0.35);
+}
+
+.tier-5 {
+  color: var(--accent-green-bright);
+  background: rgba(232, 255, 90, 0.10); /* MAXED */
+  border-color: rgba(232, 255, 90, 0.55);
+  box-shadow: 0 0 12px rgba(232, 255, 90, 0.20);
+}
+
+.track {
+  height: 5px;
+  width: 100%;
+  background: var(--bg-card2);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fillPartial {
+  background: var(--accent-blue);
+}
+
+.fillFull {
+  background: var(--accent-green);
+}
+
+.pillsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 9px;
+  padding-top: 9px;
+  border-top: 1px solid var(--border);
+}
+
+.pill {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--muted2);
+  background: var(--bg-card2);
+  padding: 3px 9px;
+  border-radius: 50px;
+}
+
+.pillScored {
+  color: var(--accent-green);
+  background: rgba(200, 241, 53, 0.08);
+}

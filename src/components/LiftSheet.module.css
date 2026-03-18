@@ -1,0 +1,194 @@
+.liftGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.liftCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+  text-align: left;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 13px 15px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.liftCard:hover {
+  border-color: var(--border-hover);
+  background: #1e1e1e;
+}
+
+.liftName {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.liftFeeds {
+  font-family: var(--font-body);
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--muted2);
+}
+
+.weightStep {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.weightRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.loadBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 18px 12px;
+  border-radius: 13px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.loadPickedLight {
+  border-color: var(--accent-green);
+  background: rgba(200, 241, 53, 0.06);
+}
+
+.loadPickedHeavy {
+  border-color: var(--accent-red);
+  background: rgba(255, 77, 109, 0.06);
+}
+
+.loadLabel {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.loadPts {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.previewCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 12px 14px;
+}
+
+.previewTitle {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+
+.previewLine {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-green);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.trackingBlock {
+  margin-top: 12px;
+}
+
+.trackingTitle {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: none;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+
+.trackingGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
+
+.trackingField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.trackingFieldLabel {
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted2);
+  margin: 0;
+}
+
+.trackingInput {
+  width: 100%;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 12px 8px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.trackingInput:focus {
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.saveBtn {
+  width: 100%;
+  padding: 16px;
+  background: var(--cream);
+  color: #0a0a0a;
+  border: none;
+  border-radius: 50px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s, opacity 0.2s;
+  text-transform: capitalize;
+}
+
+.saveBtn:hover:not(:disabled) {
+  background: #e8e0d0;
+  transform: translateY(-1px);
+}
+
+.saveBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}

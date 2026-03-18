@@ -1,0 +1,143 @@
+.lengthGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lengthBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+  text-align: left;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 13px 15px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.lengthBtn:hover {
+  border-color: var(--border-hover);
+  background: #1e1e1e;
+}
+
+.lengthName {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.lengthDesc {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.intensityStep {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.intRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.intBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 18px 12px;
+  border-radius: 13px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.intPickedEasy {
+  border-color: var(--accent-green);
+  background: rgba(200, 241, 53, 0.06);
+}
+
+.intPickedHard {
+  border-color: var(--accent-red);
+  background: rgba(255, 77, 109, 0.06);
+}
+
+.intEmoji {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.intLabel {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.intSub {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.previewCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 12px 14px;
+}
+
+.previewTitle {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+
+.previewLine {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-green);
+  line-height: 1.45;
+  margin: 0;
+  word-break: break-word;
+}
+
+.saveBtn {
+  width: 100%;
+  padding: 16px;
+  background: var(--cream);
+  color: #0a0a0a;
+  border: none;
+  border-radius: 50px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s, opacity 0.2s;
+  text-transform: capitalize;
+}
+
+.saveBtn:hover:not(:disabled) {
+  background: #e8e0d0;
+  transform: translateY(-1px);
+}
+
+.saveBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}

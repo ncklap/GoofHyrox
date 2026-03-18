@@ -1,0 +1,58 @@
+.container {
+  text-align: center;
+  padding: 20px 0 12px;
+}
+
+.label {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  color: var(--muted);
+  margin: 0 0 10px;
+  text-transform: uppercase;
+}
+
+.verdict {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 11.5vw, 4.8rem);
+  font-weight: 700;
+  margin: 0;
+  line-height: 0.93;
+  letter-spacing: -0.03em;
+  word-break: break-word;
+}
+
+.onboarding {
+  color: var(--muted);
+}
+
+.notReady {
+  color: var(--accent-red);
+}
+
+.orange {
+  color: var(--accent-orange);
+}
+
+.yellow {
+  color: var(--accent-yellow);
+}
+
+.ready,
+.crush {
+  color: var(--accent-green);
+}
+
+.elite {
+  color: var(--accent-green-bright);
+}
+
+.savage {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--muted2);
+  margin: 12px 0 0;
+  line-height: 1.4;
+}

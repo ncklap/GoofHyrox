@@ -1,0 +1,169 @@
+.wrap {
+  margin-top: 0;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 11px 13px;
+  gap: 10px;
+}
+
+.expired {
+  opacity: 0.45;
+}
+
+.expired .name {
+  text-decoration: line-through;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.emoji {
+  font-size: 15px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.textCol {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.name {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--muted2);
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  gap: 6px;
+  position: relative;
+  padding-right: 22px;
+}
+
+.impactWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.impactTrack {
+  width: 52px;
+  height: 5px;
+  background: var(--bg-card2);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.impactFill {
+  height: 100%;
+  width: 0%;
+  border-radius: 10px;
+  transition: width 0.35s ease;
+}
+
+.impactFill0 { background: rgba(153, 153, 153, 0.75); } /* LOW IMPACT */
+.impactFill1 { background: var(--accent-yellow); } /* DECENT */
+.impactFill2 { background: var(--accent-green); } /* HIGH IMPACT */
+.impactFill3 { background: var(--accent-green-bright); } /* BIG IMPACT */
+
+.impactLabel {
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.impactLabel0 { color: var(--muted2); }
+.impactLabel1 { color: var(--accent-yellow); }
+.impactLabel2 { color: var(--accent-green); }
+.impactLabel3 { color: var(--accent-green-bright); }
+
+.expiredImpact {
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted2);
+}
+
+.date {
+  font-family: var(--font-body);
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.deleteBtn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 6px 4px;
+  border-radius: 6px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.deleteBtn:hover {
+  color: var(--accent-red);
+  background: rgba(255, 77, 109, 0.1);
+}
+
+.empty {
+  text-align: center;
+  padding: 24px 0;
+}
+
+.empty p {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--muted);
+  margin: 0;
+}

@@ -1,0 +1,70 @@
+:root {
+  --bg: #0A0A0A;
+  --bg-card: #141414;
+  --bg-card2: #1C1C1C;
+  --border: rgba(255, 255, 255, 0.10);
+  --border-hover: rgba(255, 255, 255, 0.22);
+  --text: #FFFFFF;
+  --muted: #666666;
+  --muted2: #999999;
+  --accent-green: #C8F135;
+  --accent-red: #FF4D6D;
+  --accent-blue: #29A8E0;
+  --accent-orange: #FF8C42;
+  --accent-yellow: #FFD93D;
+  --accent-green-bright: #E8FF5A;
+  --cream: #F0EBE0;
+  --font-display: 'Clash Display', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
+}
+
+input[type="date"] {
+  color-scheme: dark;
+}
+
+button {
+  font-family: inherit;
+  transition: border-color 0.2s, background 0.2s, color 0.2s, transform 0.2s, opacity 0.2s;
+}
+
+.hyrox-section-label {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 9px;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted);
+  border-radius: 2px;
+}
