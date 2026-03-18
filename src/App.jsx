@@ -69,7 +69,7 @@ export default function App() {
             ) : (
               <LoginPage
                 onGoogleLogin={signInWithGoogle}
-                onEmailLogin={signInWithEmail}
+                onEmailLogin={signInWithEmailPassword}
               />
             )
           }

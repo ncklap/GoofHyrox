@@ -3,16 +3,16 @@ import styles from './LoginPage.module.css';
 
 export default function LoginPage({ onGoogleLogin, onEmailLogin }) {
   const [email, setEmail] = useState('');
-  const [sent, setSent] = useState(false);
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  async function handleEmail(e) {
+  async function handleCredentials(e) {
     e.preventDefault();
-    if (!email) return;
+    if (!email || !password) return;
     setError('');
-    const { error: err } = await onEmailLogin(email);
-    if (err) setError(err.message);
-    else setSent(true);
+
+    const { error: err } = await onEmailLogin(email, password);
+    if (err) setError(err.message || 'Login failed');
   }
 
   return (
@@ -31,24 +31,27 @@ export default function LoginPage({ onGoogleLogin, onEmailLogin }) {
           <span>or</span>
         </div>
 
-        {sent ? (
-          <div className={styles.sentMsg}>
-            Check your email for the magic link!
-          </div>
-        ) : (
-          <form className={styles.emailForm} onSubmit={handleEmail}>
-            <input
-              className={styles.input}
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <button className={styles.primaryBtn} type="submit">
-              Send magic link
-            </button>
-          </form>
-        )}
+        <form className={styles.emailForm} onSubmit={handleCredentials}>
+          <input
+            className={styles.input}
+            type="email"
+            placeholder="Username (email)"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="username"
+          />
+          <input
+            className={styles.input}
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
+          />
+          <button className={styles.primaryBtn} type="submit">
+            Continue
+          </button>
+        </form>
 
         {error && <p className={styles.error}>{error}</p>}
       </div>

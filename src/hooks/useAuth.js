@@ -68,13 +68,39 @@ export function useAuth() {
     });
   }, []);
 
-  const signInWithEmail = useCallback(async (email) => {
+  const signInWithEmailPassword = useCallback(async (email, password) => {
     if (DEV_SKIP_AUTH) return { error: null };
-    const { error } = await supabase.auth.signInWithOtp({
+
+    // First try sign-in (existing user).
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      password,
     });
-    return { error };
+
+    if (!signInError) {
+      return { data: signInData, error: null };
+    }
+
+    // If the user doesn't exist yet, attempt sign-up, then sign-in again.
+    const { error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (signUpError) {
+      // Some Supabase setups return an error even when the account already exists; fall back to sign-in.
+      const { data: signInData2, error: signInError2 } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      return { data: signInData2, error: signInError2 || signUpError };
+    }
+
+    const { data: signInData3, error: signInError3 } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    return { data: signInData3, error: signInError3 };
   }, []);
 
   const signOut = useCallback(async () => {
@@ -114,7 +140,7 @@ export function useAuth() {
     profile,
     loading,
     signInWithGoogle,
-    signInWithEmail,
+    signInWithEmailPassword,
     signOut,
     upsertProfile,
     refreshProfile: () =>
