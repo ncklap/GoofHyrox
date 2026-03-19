@@ -34,7 +34,7 @@ export default function App() {
     profile,
     loading,
     signInWithGoogle,
-    signInWithEmail,
+    signInWithEmailPassword,
     signOut,
     upsertProfile,
   } = useAuth();
