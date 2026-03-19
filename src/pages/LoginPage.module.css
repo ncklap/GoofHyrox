@@ -150,6 +150,28 @@
   line-height: 1.5;
 }
 
+.modeRow {
+  display: flex;
+  justify-content: center;
+  margin: -8px 0 0;
+}
+
+.secondaryLink {
+  background: none;
+  border: none;
+  padding: 10px 0;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted2);
+  text-decoration: underline;
+}
+
+.secondaryLink:hover {
+  color: var(--text);
+}
+
 .error {
   font-family: var(--font-body);
   font-size: 13px;

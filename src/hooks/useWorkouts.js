@@ -1,11 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase.js';
-import {
-  DEV_SKIP_AUTH,
-  DEV_USER_ID,
-  loadDevWorkouts,
-  saveDevWorkouts,
-} from '../lib/devMode.js';
 
 const LIFT_TRACKING_CACHE_KEY = 'goofhyrox_lift_tracking_cache_v1';
 
@@ -59,7 +53,6 @@ function mergeLiftTrackingIntoWorkouts(workouts) {
 export function useWorkouts(userId) {
   const [workouts, setWorkouts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const isDev = DEV_SKIP_AUTH && userId === DEV_USER_ID;
 
   const fetchWorkouts = useCallback(async () => {
     if (!userId) {
@@ -68,11 +61,6 @@ export function useWorkouts(userId) {
       return;
     }
     setLoading(true);
-    if (isDev) {
-      setWorkouts(mergeLiftTrackingIntoWorkouts(loadDevWorkouts()));
-      setLoading(false);
-      return;
-    }
     const { data } = await supabase
       .from('workouts')
       .select('*')
@@ -80,21 +68,14 @@ export function useWorkouts(userId) {
       .order('logged_at', { ascending: false });
     setWorkouts(mergeLiftTrackingIntoWorkouts(data || []));
     setLoading(false);
-  }, [userId, isDev]);
+  }, [userId]);
 
   useEffect(() => {
     fetchWorkouts();
   }, [fetchWorkouts]);
 
   useEffect(() => {
-    if (!isDev || !userId) return;
-    const onSync = () => setWorkouts(mergeLiftTrackingIntoWorkouts(loadDevWorkouts()));
-    window.addEventListener('hyrox-dev-sync', onSync);
-    return () => window.removeEventListener('hyrox-dev-sync', onSync);
-  }, [isDev, userId]);
-
-  useEffect(() => {
-    if (isDev || !userId) return;
+    if (!userId) return;
     const channel = supabase
       .channel('workouts-changes')
       .on('postgres_changes', {
@@ -108,7 +89,7 @@ export function useWorkouts(userId) {
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, [userId, isDev, fetchWorkouts]);
+  }, [userId, fetchWorkouts]);
 
   const addWorkout = useCallback(async (workout) => {
     const isLift = !!workout?.is_lift;
@@ -119,38 +100,6 @@ export function useWorkouts(userId) {
         lift_reps: workout.lift_reps ?? null,
       }
       : null;
-
-    if (isDev) {
-      const row = {
-        id: crypto.randomUUID(),
-        user_id: DEV_USER_ID,
-        logged_at: new Date().toISOString(),
-        ...workout,
-      };
-      const next = [row, ...loadDevWorkouts()];
-      saveDevWorkouts(next);
-      setWorkouts(next);
-
-      // Keep lift tracking in sync with the cache for prefill + display.
-      if (isLift && liftTracking) {
-        const hasAny =
-          liftTracking.lift_weight_kg !== null ||
-          liftTracking.lift_sets !== null ||
-          liftTracking.lift_reps !== null;
-        if (hasAny) {
-          upsertLiftTrackingEntry({
-            id: row.id,
-            user_id: row.user_id,
-            logged_at: row.logged_at,
-            is_lift: true,
-            lift_id: row.lift_id,
-            ...liftTracking,
-          });
-        }
-      }
-
-      return { data: row, error: null };
-    }
     const dbWorkout = { ...workout };
     if (isLift) {
       // Supabase insert would fail if the workouts table doesn't have these columns.
@@ -191,17 +140,9 @@ export function useWorkouts(userId) {
       }
     }
     return { data, error };
-  }, [userId, isDev]);
+  }, [userId]);
 
   const deleteWorkout = useCallback(async (workoutId) => {
-    if (isDev) {
-      const next = loadDevWorkouts().filter(w => w.id !== workoutId);
-      saveDevWorkouts(next);
-      setWorkouts(next);
-
-      removeLiftTrackingEntry(workoutId);
-      return { error: null };
-    }
     const { error } = await supabase
       .from('workouts')
       .delete()
@@ -212,7 +153,7 @@ export function useWorkouts(userId) {
       removeLiftTrackingEntry(workoutId);
     }
     return { error };
-  }, [userId, isDev]);
+  }, [userId]);
 
   return { workouts, loading, addWorkout, deleteWorkout, refetch: fetchWorkouts };
 }

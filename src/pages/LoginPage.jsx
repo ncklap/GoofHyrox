@@ -1,18 +1,33 @@
 import { useState } from 'react';
 import styles from './LoginPage.module.css';
 
-export default function LoginPage({ onGoogleLogin, onEmailLogin }) {
+export default function LoginPage({ onGoogleLogin, onEmailLogin, onEmailSignUp }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [mode, setMode] = useState('signin'); // 'signin' | 'signup'
+  const [status, setStatus] = useState('');
 
   async function handleCredentials(e) {
     e.preventDefault();
     if (!email || !password) return;
     setError('');
+    setStatus('');
 
-    const { error: err } = await onEmailLogin(email, password);
-    if (err) setError(err.message || 'Login failed');
+    if (mode === 'signin') {
+      const { error: err } = await onEmailLogin(email, password);
+      if (err) setError(err.message || 'Login failed');
+      return;
+    }
+
+    const { error: err } = await onEmailSignUp(email, password);
+    if (err) {
+      setError(err.message || 'Sign up failed');
+      return;
+    }
+
+    // When email confirmation is enabled, Supabase typically sends a confirmation email.
+    setStatus('Account created. If confirmation is enabled, check your email then sign in.');
   }
 
   return (
@@ -29,6 +44,26 @@ export default function LoginPage({ onGoogleLogin, onEmailLogin }) {
 
         <div className={styles.divider}>
           <span>or</span>
+        </div>
+
+        <div className={styles.modeRow}>
+          {mode === 'signin' ? (
+            <button
+              type="button"
+              className={styles.secondaryLink}
+              onClick={() => setMode('signup')}
+            >
+              Create an account
+            </button>
+          ) : (
+            <button
+              type="button"
+              className={styles.secondaryLink}
+              onClick={() => setMode('signin')}
+            >
+              Back to sign in
+            </button>
+          )}
         </div>
 
         <form className={styles.emailForm} onSubmit={handleCredentials}>
@@ -49,10 +84,11 @@ export default function LoginPage({ onGoogleLogin, onEmailLogin }) {
             autoComplete="current-password"
           />
           <button className={styles.primaryBtn} type="submit">
-            Continue
+            {mode === 'signin' ? 'Continue' : 'Sign up'}
           </button>
         </form>
 
+        {status && <div className={styles.sentMsg}>{status}</div>}
         {error && <p className={styles.error}>{error}</p>}
       </div>
     </div>

@@ -12,7 +12,6 @@ import LiftSheet from '../components/LiftSheet.jsx';
 import HyroxSheet from '../components/HyroxSheet.jsx';
 import MotivateMe from '../components/MotivateMe.jsx';
 import Toast from '../components/Toast.jsx';
-import { DEV_SKIP_AUTH } from '../lib/devMode.js';
 import styles from './MainApp.module.css';
 
 function getInitials(name) {
@@ -61,12 +60,6 @@ export default function MainApp({ profile, onSignOut }) {
 
   return (
     <div className={styles.page}>
-      {DEV_SKIP_AUTH && (
-        <div className={styles.devBanner}>
-          Dev mode (no login) — data in this browser only. Set{' '}
-          <code>VITE_DEV_SKIP_AUTH=false</code> in <code>.env</code> for real auth.
-        </div>
-      )}
       <Toast
         message={toast.message}
         visible={toast.visible}

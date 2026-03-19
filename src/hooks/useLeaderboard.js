@@ -1,31 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase.js';
 import { computeScores, getVerdict } from '../lib/scoring.js';
-import {
-  DEV_SKIP_AUTH,
-  loadDevProfile,
-  loadDevWorkouts,
-} from '../lib/devMode.js';
-
-function buildDevLeaderboard() {
-  const profile = loadDevProfile();
-  const all = loadDevWorkouts();
-  const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - 15);
-  const userWorkouts = all.filter(
-    w => w.user_id === profile.id && new Date(w.logged_at) >= cutoff
-  );
-  const scores = computeScores(userWorkouts);
-  const verdict = getVerdict(scores.total, userWorkouts.length > 0);
-  return [
-    {
-      profile,
-      scores,
-      verdict,
-      workoutCount: userWorkouts.length,
-    },
-  ];
-}
 
 export function useLeaderboard() {
   const [entries, setEntries] = useState([]);
@@ -33,12 +8,6 @@ export function useLeaderboard() {
 
   const fetchLeaderboard = useCallback(async () => {
     setLoading(true);
-
-    if (DEV_SKIP_AUTH) {
-      setEntries(buildDevLeaderboard());
-      setLoading(false);
-      return;
-    }
 
     const { data: profiles } = await supabase
       .from('profiles')
@@ -80,23 +49,18 @@ export function useLeaderboard() {
   }, [fetchLeaderboard]);
 
   useEffect(() => {
-    if (!DEV_SKIP_AUTH) {
-      const channel = supabase
-        .channel('leaderboard-workouts')
-        .on('postgres_changes', {
-          event: '*',
-          schema: 'public',
-          table: 'workouts',
-        }, () => {
-          fetchLeaderboard();
-        })
-        .subscribe();
+    const channel = supabase
+      .channel('leaderboard-workouts')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'workouts',
+      }, () => {
+        fetchLeaderboard();
+      })
+      .subscribe();
 
-      return () => { supabase.removeChannel(channel); };
-    }
-    const onSync = () => fetchLeaderboard();
-    window.addEventListener('hyrox-dev-sync', onSync);
-    return () => window.removeEventListener('hyrox-dev-sync', onSync);
+    return () => { supabase.removeChannel(channel); };
   }, [fetchLeaderboard]);
 
   return { entries, loading, refetch: fetchLeaderboard };

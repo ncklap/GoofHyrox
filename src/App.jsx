@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth.js';
-import { DEV_SKIP_AUTH } from './lib/devMode.js';
 import LoginPage from './pages/LoginPage.jsx';
 import AuthCallback from './pages/AuthCallback.jsx';
 import MainApp from './pages/MainApp.jsx';
@@ -35,6 +34,7 @@ export default function App() {
     loading,
     signInWithGoogle,
     signInWithEmailPassword,
+    signUpWithEmailPassword,
     signOut,
     upsertProfile,
   } = useAuth();
@@ -62,14 +62,13 @@ export default function App() {
         <Route
           path="/"
           element={
-            DEV_SKIP_AUTH ? (
-              <Navigate to="/app" replace />
-            ) : session && !loading ? (
+            session && !loading ? (
               <Navigate to="/app" replace />
             ) : (
               <LoginPage
                 onGoogleLogin={signInWithGoogle}
                 onEmailLogin={signInWithEmailPassword}
+                onEmailSignUp={signUpWithEmailPassword}
               />
             )
           }
@@ -103,7 +102,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="*" element={<Navigate to={DEV_SKIP_AUTH ? '/app' : '/'} replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
