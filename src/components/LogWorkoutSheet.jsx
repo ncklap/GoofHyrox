@@ -105,12 +105,12 @@ export default function LogWorkoutSheet({ open, onClose, onLog, onOpenLift, onOp
     return Number.isFinite(n) && n > 0;
   })();
 
-  function saveWorkout() {
+  async function saveWorkout() {
     if (feltHard === null || !activity) return;
     const n = parseFloat(value);
     // Run is stored/scored in meters, but user enters kilometers.
     const storedValue = activity.id === 'run' ? n * 1000 : parseInt(value, 10);
-    onLog({
+    const res = await onLog({
       activity_id: activity.id,
       value: storedValue,
       hard: feltHard,
@@ -118,6 +118,7 @@ export default function LogWorkoutSheet({ open, onClose, onLog, onOpenLift, onOp
       is_hyrox: false,
       __toast: `${ACTIVITY_ICONS[activity.id]} ${ACTIVITY_LABELS[activity.id]} logged ✓`,
     });
+    if (res?.error) return;
     handleClose();
   }
 

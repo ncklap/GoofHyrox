@@ -44,6 +44,13 @@ export default function MainApp({ profile, onSignOut }) {
         message: toastMsg || 'Workout logged ✓',
       });
     }
+    if (error) {
+      setToast({
+        visible: true,
+        message: error.message || 'Failed to log workout',
+      });
+    }
+    return { error: error ?? null };
   }, [addWorkout]);
 
   const openLiftAfterClose = useCallback(() => {
