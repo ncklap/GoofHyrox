@@ -4,6 +4,8 @@
   padding: 0 20px 100px;
   min-height: 100dvh;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .devBanner {
@@ -164,6 +166,18 @@
 
 .section {
   margin-top: 22px;
+}
+
+.logSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0; /* Allow flex children to shrink inside the centered region */
+}
+
+.logSection .section {
+  margin-top: 0;
 }
 
 .ctaSection {

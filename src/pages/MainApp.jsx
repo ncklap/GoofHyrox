@@ -133,19 +133,20 @@ export default function MainApp({ profile, onSignOut }) {
         </div>
       </section>
 
-      <section className={`${styles.section} ${styles.ctaSection}`}>
-        <button
-          type="button"
-          className={styles.primaryCta}
-          onClick={() => setShowWorkout(true)}
-        >
-          Log workout
-        </button>
-      </section>
-
-      <section className={styles.section}>
-        <WorkoutLog workouts={workouts} onDelete={handleDelete} />
-      </section>
+      <div className={styles.logSection}>
+        <section className={styles.section}>
+          <WorkoutLog workouts={workouts} onDelete={handleDelete} />
+        </section>
+        <section className={`${styles.section} ${styles.ctaSection}`}>
+          <button
+            type="button"
+            className={styles.primaryCta}
+            onClick={() => setShowWorkout(true)}
+          >
+            Log workout
+          </button>
+        </section>
+      </div>
 
       <section className={`${styles.section} ${styles.ctaSection}`}>
         <MotivateMe />
