@@ -143,11 +143,12 @@
   font-family: var(--font-body);
   font-size: 14px;
   color: var(--muted2);
-  padding: 20px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
   line-height: 1.5;
+  margin: 6px 0 0;
 }
 
 .modeRow {

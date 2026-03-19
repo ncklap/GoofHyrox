@@ -14,20 +14,40 @@ export default function LoginPage({ onGoogleLogin, onEmailLogin, onEmailSignUp }
     setError('');
     setStatus('');
 
-    if (mode === 'signin') {
-      const { error: err } = await onEmailLogin(email, password);
-      if (err) setError(err.message || 'Login failed');
-      return;
-    }
+    try {
+      if (mode === 'signin') {
+        if (!onEmailLogin) {
+          setError('Login is not available.');
+          return;
+        }
+        const { error: err } = await onEmailLogin(email, password);
+        if (err) setError(err.message || 'Login failed');
+        return;
+      }
 
-    const { error: err } = await onEmailSignUp(email, password);
-    if (err) {
-      setError(err.message || 'Sign up failed');
-      return;
-    }
+      if (!onEmailSignUp) {
+        setError('Sign up is not available.');
+        return;
+      }
 
-    // When email confirmation is enabled, Supabase typically sends a confirmation email.
-    setStatus('Account created. If confirmation is enabled, check your email then sign in.');
+      const { data, error: err } = await onEmailSignUp(email, password);
+      if (err) {
+        setError(err.message || 'Sign up failed');
+        return;
+      }
+
+      // If confirmations are not required, Supabase typically returns an active session immediately.
+      // If confirmations are required, `session` is usually null and the user must verify via email.
+      if (data?.session) {
+        setStatus('Account created. Signed in successfully ✓');
+      } else {
+        setStatus('Account created. If confirmation is enabled, check your email then sign in.');
+      }
+    } catch (err) {
+      // Supabase can throw for network/auth misconfiguration; surface the message in UI.
+      const msg = err?.message || String(err) || 'Authentication failed';
+      setError(msg);
+    }
   }
 
   return (
