@@ -92,8 +92,17 @@ export default function MainApp({ profile, onSignOut }) {
               );
             })()
           )}
-          <div className={styles.avatar} aria-hidden>
-            {getInitials(profile?.name)}
+          <div className={styles.profileStack}>
+            <Link to="/profile" className={styles.avatar} aria-label="Profile">
+              {getInitials(profile?.name)}
+            </Link>
+            <button
+              type="button"
+              className={styles.logWorkoutTopBtn}
+              onClick={() => setShowWorkout(true)}
+            >
+              Log workout
+            </button>
           </div>
         </div>
       </header>
@@ -130,13 +139,6 @@ export default function MainApp({ profile, onSignOut }) {
 
       <section className={`${styles.section} ${styles.ctaSection}`}>
         <MotivateMe />
-        <button
-          type="button"
-          className={styles.primaryCta}
-          onClick={() => setShowWorkout(true)}
-        >
-          Log workout
-        </button>
       </section>
 
       <nav className={styles.nav}>
