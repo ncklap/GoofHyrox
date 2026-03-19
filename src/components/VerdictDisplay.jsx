@@ -15,9 +15,8 @@ export default function VerdictDisplay({ verdict }) {
 
   return (
     <div className={styles.container}>
-      <p className={styles.label}>HYROX READY?</p>
+      <p className={styles.label}>RACE COUNTDOWN</p>
       <h1 className={`${styles.verdict} ${toneClass}`}>{verdict.label}</h1>
-      <p className={styles.savage}>The meter doesn&apos;t lie. Train harder.</p>
     </div>
   );
 }

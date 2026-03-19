@@ -111,6 +111,8 @@ export default function MainApp({ profile, onSignOut }) {
       <ReadinessMeter
         score={scores.total}
         hasWorkouts={workouts.length > 0}
+        statusText={verdict.subtext}
+        statusTone={verdict.tone}
       />
 
       {showCapWarning && (
@@ -150,13 +152,19 @@ export default function MainApp({ profile, onSignOut }) {
 
       <section className={`${styles.section} ${styles.ctaSection}`}>
         <MotivateMe />
+        <button
+          type="button"
+          className={styles.viewAllWorkoutsLink}
+          onClick={() => window.dispatchEvent(new CustomEvent('open-training-calendar'))}
+        >
+          View all workouts
+        </button>
       </section>
 
       <nav className={styles.nav}>
         <Link to="/app" className={`${styles.navLink} ${styles.active}`}>Home</Link>
         <Link to="/leaderboard" className={styles.navLink}>Board</Link>
         <Link to="/profile" className={styles.navLink}>Profile</Link>
-        <button type="button" className={styles.navLink} onClick={onSignOut}>Out</button>
       </nav>
 
       <LogWorkoutSheet

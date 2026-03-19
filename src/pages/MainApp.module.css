@@ -176,14 +176,39 @@
   min-height: 0; /* Allow flex children to shrink inside the centered region */
 }
 
-.logSection .section {
+.logSection > .section {
   margin-top: 0;
+}
+
+/* Space between the Activities grid and the Recent workouts list */
+.logSection > .section:first-child {
+  margin-top: 34px;
+}
+
+.logSection > .section:last-child {
+  /* Space between Recent workouts list and the Log workout CTA */
+  margin-top: 26px;
 }
 
 .ctaSection {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.viewAllWorkoutsLink {
+  width: 100%;
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted2);
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 2px 0 0;
 }
 
 .catGrid {

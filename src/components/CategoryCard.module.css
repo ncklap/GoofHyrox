@@ -11,7 +11,9 @@
 }
 
 .zeroScore {
-  opacity: 0.4;
+  opacity: 0.72;
+  background: #171717;
+  border-color: rgba(255, 255, 255, 0.14);
 }
 
 .header {

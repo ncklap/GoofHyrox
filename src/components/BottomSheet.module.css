@@ -6,7 +6,7 @@
   -webkit-backdrop-filter: blur(4px);
   z-index: 100;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
   animation: backdropIn 0.25s ease forwards;
 }
@@ -19,10 +19,10 @@
   border-top: 1px solid var(--border);
   width: 100%;
   max-width: 390px;
-  max-height: 92vh;
-  min-height: 45vh;
+  max-height: 96vh;
+  min-height: 55vh;
   overflow: hidden;
-  padding: 0 20px 40px;
+  padding: 0 20px 24px;
   animation: sheetIn 0.35s cubic-bezier(0.32, 0.72, 0, 1) forwards;
 }
 
@@ -31,7 +31,7 @@
   height: 4px;
   background: var(--border-hover);
   border-radius: 10px;
-  margin: 13px auto 20px;
+  margin: 13px auto 14px;
 }
 
 .stepDots {
@@ -93,7 +93,7 @@
   gap: 12px;
   flex: 1;
   min-height: 0;
-  max-height: min(52vh, 420px);
+  max-height: none; /* Let the sheet control the height; scroll only if needed */
   overflow-y: auto;
   padding-bottom: 8px;
   -webkit-overflow-scrolling: touch;

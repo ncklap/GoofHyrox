@@ -37,17 +37,17 @@ export function useAuth() {
     setLoading(false);
   }
 
-  const signInWithGoogle = useCallback(async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
-    });
-  }, []);
-
   const signInWithEmailPassword = useCallback(async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
+    });
+    return { data, error };
+  }, []);
+
+  const sendPasswordReset = useCallback(async (email) => {
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/callback`,
     });
     return { data, error };
   }, []);
@@ -89,9 +89,9 @@ export function useAuth() {
     user: session?.user ?? null,
     profile,
     loading,
-    signInWithGoogle,
     signInWithEmailPassword,
     signUpWithEmailPassword,
+    sendPasswordReset,
     signOut,
     upsertProfile,
     refreshProfile: () => session && fetchProfile(session.user.id),

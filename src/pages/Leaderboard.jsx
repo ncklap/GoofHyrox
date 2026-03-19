@@ -68,7 +68,10 @@ export default function Leaderboard({ currentUserId }) {
                 </div>
               </div>
               <div className={styles.midCol}>
-                <span className={styles.name}>{entry.profile.name}</span>
+                <div className={styles.nameRow}>
+                  <span className={styles.name}>{entry.profile.name}</span>
+                  {isCurrent && <span className={styles.youPill}>you</span>}
+                </div>
                 <span className={`${styles.verdict} ${vClass}`}>
                   {entry.verdict.label}
                 </span>

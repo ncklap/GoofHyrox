@@ -18,7 +18,14 @@ function fillClassAndStyle(level) {
   };
 }
 
-export default function ReadinessMeter({ score, max = 400, compact = false, hasWorkouts = true }) {
+export default function ReadinessMeter({
+  score,
+  max = 400,
+  compact = false,
+  hasWorkouts = true,
+  statusText,
+  statusTone,
+}) {
   const pct = Math.min((score / max) * 100, 100);
   const level = levelFromScore(score, hasWorkouts);
   const { className, style } = fillClassAndStyle(level);
@@ -46,6 +53,20 @@ export default function ReadinessMeter({ score, max = 400, compact = false, hasW
           style={{ width: `${pct}%`, ...style }}
         />
       </div>
+      {statusText ? (
+        <p
+          className={[
+            styles.statusLine,
+            statusTone === 'notReady' || statusTone === 'onboarding'
+              ? styles.statusRed
+              : (statusTone === 'orange' || statusTone === 'yellow')
+                ? styles.statusBlue
+                : styles.statusGreen,
+          ].join(' ')}
+        >
+          {statusText}
+        </p>
+      ) : null}
     </div>
   );
 }

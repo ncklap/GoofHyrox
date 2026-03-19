@@ -18,6 +18,7 @@ export default function ProfilePage({ profile, onUpdate, onSignOut }) {
   const [hyroxRaceType, setHyroxRaceType] = useState('');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
   const [confirmOut, setConfirmOut] = useState(false);
 
   function kgToLbs(kg) {
@@ -80,9 +81,10 @@ export default function ProfilePage({ profile, onUpdate, onSignOut }) {
 
   async function handleSave(e) {
     e.preventDefault();
+    setErrorMsg('');
     setSaving(true);
     setSaved(false);
-    await onUpdate({
+    const res = await onUpdate({
       name,
       race_date: raceDate || null,
       email: profile?.email,
@@ -97,8 +99,16 @@ export default function ProfilePage({ profile, onUpdate, onSignOut }) {
       weight_kg: weightLbs.trim() === '' ? null : lbsToKg(Number(weightLbs)),
       hyrox_race_type: hyroxRaceType || null,
     });
+
     setSaving(false);
+    if (res?.error) {
+      setErrorMsg(res.error.message || 'Could not save profile.');
+      setSaved(false);
+      return;
+    }
+
     setSaved(true);
+    setErrorMsg('');
     setTimeout(() => setSaved(false), 2000);
   }
 
@@ -202,7 +212,18 @@ export default function ProfilePage({ profile, onUpdate, onSignOut }) {
         <button className={styles.saveBtn} type="submit" disabled={saving}>
           {saving ? 'Saving…' : saved ? 'Saved!' : 'Save changes'}
         </button>
+        {errorMsg ? (
+          <p className={styles.error} role="alert">
+            {errorMsg}
+          </p>
+        ) : null}
       </form>
+
+      <nav className={styles.nav}>
+        <Link to="/app" className={styles.navLink}>Home</Link>
+        <Link to="/leaderboard" className={styles.navLink}>Board</Link>
+        <Link to="/profile" className={`${styles.navLink} ${styles.active}`}>Profile</Link>
+      </nav>
 
       <button type="button" className={styles.signOutBtn} onClick={() => setConfirmOut(true)}>
         Log out
@@ -220,12 +241,6 @@ export default function ProfilePage({ profile, onUpdate, onSignOut }) {
           onSignOut();
         }}
       />
-
-      <nav className={styles.nav}>
-        <Link to="/app" className={styles.navLink}>Home</Link>
-        <Link to="/leaderboard" className={styles.navLink}>Board</Link>
-        <Link to="/profile" className={`${styles.navLink} ${styles.active}`}>Profile</Link>
-      </nav>
     </div>
   );
 }

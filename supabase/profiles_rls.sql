@@ -7,6 +7,10 @@ create table if not exists public.profiles (
   name text,
   email text,
   race_date date,
+  gender text,
+  height_cm numeric,
+  weight_kg numeric,
+  hyrox_race_type text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -44,3 +48,11 @@ create policy "profiles_update_own"
   to authenticated
   using (auth.uid() = id)
   with check (auth.uid() = id);
+
+-- In case profiles table already exists without the new columns,
+-- add them safely (run multiple times).
+alter table public.profiles
+  add column if not exists gender text,
+  add column if not exists height_cm numeric,
+  add column if not exists weight_kg numeric,
+  add column if not exists hyrox_race_type text;

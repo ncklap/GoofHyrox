@@ -77,3 +77,24 @@
   border-radius: 50px;
   transition: width 0.7s ease, background 0.5s ease;
 }
+
+.statusLine {
+  margin-top: 10px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--muted2);
+  line-height: 1.3;
+}
+
+.statusRed {
+  color: var(--accent-red);
+}
+
+.statusBlue {
+  color: var(--accent-blue);
+}
+
+.statusGreen {
+  color: var(--accent-green);
+}

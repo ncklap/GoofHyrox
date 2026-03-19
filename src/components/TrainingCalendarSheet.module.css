@@ -1,0 +1,182 @@
+.calendarWrap {
+  position: relative;
+}
+
+.monthNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.monthLabel {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.navBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.navBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.weekday {
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.blankCell {
+  height: 56px;
+}
+
+.dayCell {
+  height: 56px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.dayActive {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.emojiSlot {
+  position: relative;
+  width: 34px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 3px;
+}
+
+.emojiCardio,
+.emojiStrength {
+  position: absolute;
+  top: 50%;
+  font-size: 20px;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+.emojiCardio {
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+.emojiStrength {
+  left: 50%;
+  transform: translate(-15%, -50%);
+  z-index: 1;
+}
+
+.dayNum {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted2);
+}
+
+.dayNumSmall {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted2);
+}
+
+.popup {
+  position: absolute;
+  width: 220px;
+  background: #111111;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px;
+  z-index: 80;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+}
+
+.popupRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 4px;
+}
+
+.popupName {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.popupDetail {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--muted2);
+}
+
+.legend {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted2);
+}
+
+.legendEmoji {
+  font-size: 14px;
+  line-height: 1;
+}
+

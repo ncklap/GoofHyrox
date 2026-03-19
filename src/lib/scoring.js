@@ -100,41 +100,135 @@ export function computeScores(workouts) {
 
 /** Design-system verdict tone class (maps to CSS module classes) */
 export function getVerdict(score, hasWorkouts) {
-  if (!hasWorkouts) {
+  // If the user hasn't logged anything yet, keep the onboarding tone.
+  if (!hasWorkouts && score === 0) {
     return {
       label: 'WHY ARE YOU HERE.',
+      subtext: 'YOU ARE NOT READY.',
       color: 'var(--muted)',
       tone: 'onboarding',
     };
   }
-  if (score >= 390) {
-    return { label: 'YOU ARE HYROX.', color: 'var(--accent-green-bright)', tone: 'elite' };
+
+  // Score is in [0..400]. Use the provided range buckets.
+  if (score >= 1 && score <= 20) {
+    return { label: 'YOU WILL DIE', subtext: 'YOU ARE NOT READY.', color: 'var(--accent-red)', tone: 'notReady' };
   }
-  if (score >= 360) {
-    return { label: "YOU'LL CRUSH IT.", color: 'var(--accent-green)', tone: 'crush' };
+  if (score >= 21 && score <= 40) {
+    return { label: "YOU'RE FUCKED", subtext: 'YOU ARE NOT READY.', color: 'var(--accent-red)', tone: 'notReady' };
   }
-  if (score >= 330) {
-    return { label: "YOU'RE READY.", color: 'var(--accent-green)', tone: 'ready' };
+  if (score >= 41 && score <= 60) {
+    return { label: 'YOU WILL GET INJURED', subtext: 'YOU ARE NOT READY.', color: 'var(--accent-red)', tone: 'notReady' };
   }
-  if (score >= 280) {
-    return { label: 'GETTING DANGEROUS.', color: 'var(--accent-yellow)', tone: 'yellow' };
+  if (score >= 61 && score <= 80) {
+    return { label: "YOU'LL GET ZIPPED UP", subtext: 'YOU ARE NOT READY.', color: 'var(--accent-red)', tone: 'notReady' };
   }
-  if (score >= 225) {
-    return { label: 'COULD BE WORSE.', color: 'var(--accent-orange)', tone: 'orange' };
+  if (score >= 81 && score <= 100) {
+    return { label: 'YOU SEE THE VISION', subtext: 'YOU ARE NOT READY.', color: 'var(--accent-red)', tone: 'notReady' };
   }
-  if (score >= 180) {
-    return { label: 'ROOM FOR GROWTH.', color: 'var(--accent-orange)', tone: 'orange' };
+  if (score >= 101 && score <= 120) {
+    return {
+      label: 'FIX IT. OR GET LEFT BEHIND.',
+      subtext: 'YOU ARE NOT READY.',
+      color: 'var(--accent-red)',
+      tone: 'notReady',
+    };
   }
-  if (score >= 135) {
-    return { label: 'NOT EVEN CLOSE.', color: 'var(--accent-red)', tone: 'notReady' };
+  if (score >= 121 && score <= 140) {
+    return {
+      label: 'PUT THE WORK IN. NO EXCUSES.',
+      subtext: 'YOU ARE NOT READY.',
+      color: 'var(--accent-red)',
+      tone: 'notReady',
+    };
   }
-  if (score >= 90) {
-    return { label: 'BLESS YOUR HEART.', color: 'var(--accent-red)', tone: 'notReady' };
+  if (score >= 141 && score <= 160) {
+    return { label: 'EARN IT.', subtext: 'YOU ARE NOT READY.', color: 'var(--accent-red)', tone: 'notReady' };
   }
-  if (score >= 45) {
-    return { label: 'DEEPLY CONCERNING.', color: 'var(--accent-red)', tone: 'notReady' };
+  if (score >= 161 && score <= 180) {
+    return {
+      label: "YOU'RE STARTING TO SHAPE UP.",
+      subtext: 'YOU ARE NOT READY.',
+      color: 'var(--accent-red)',
+      tone: 'notReady',
+    };
   }
-  return { label: "YOU'RE FUCKED.", color: 'var(--accent-red)', tone: 'notReady' };
+
+  if (score >= 181 && score <= 200) {
+    return {
+      label: "YOU'RE IN THE MIX NOW.",
+      subtext: "YOU'RE NOT READY - BUT CLOSE.",
+      color: 'var(--accent-orange)',
+      tone: 'orange',
+    };
+  }
+  if (score >= 201 && score <= 220) {
+    return { label: "NOW WE'RE DANCING", subtext: "YOU'RE ALMOST READY.", color: 'var(--accent-yellow)', tone: 'yellow' };
+  }
+  if (score >= 221 && score <= 240) {
+    return {
+      label: "KEEP STACKING. DON'T GET COMFORTABLE.",
+      subtext: "YOU'RE ALMOST READY.",
+      color: 'var(--accent-yellow)',
+      tone: 'yellow',
+    };
+  }
+  if (score >= 241 && score <= 260) {
+    return { label: 'ABS IS THAT YOU?', subtext: "YOU'RE CLOSE.", color: 'var(--accent-yellow)', tone: 'yellow' };
+  }
+  if (score >= 261 && score <= 280) {
+    return {
+      label: "YOU'RE GETTING DANGEROUS.",
+      subtext: "YOU'RE ALMOST READY.",
+      color: 'var(--accent-yellow)',
+      tone: 'yellow',
+    };
+  }
+
+  if (score >= 281 && score <= 300) {
+    return {
+      label: "YOU'RE CLOSE. VERY CLOSE.",
+      subtext: "YOU'RE NEARLY READY.",
+      color: 'var(--accent-green)',
+      tone: 'ready',
+    };
+  }
+  if (score >= 301 && score <= 320) {
+    return {
+      label: "YOU'RE READY. LET'S SEE IT THEN.",
+      subtext: "YOU'RE READY.",
+      color: 'var(--accent-green)',
+      tone: 'ready',
+    };
+  }
+  if (score >= 321 && score <= 340) {
+    return {
+      label: "YOU'RE READY. WALK LIKE IT.",
+      subtext: "YOU'RE READY.",
+      color: 'var(--accent-green)',
+      tone: 'ready',
+    };
+  }
+
+  if (score >= 341 && score <= 355) {
+    return { label: 'FUCK WITH ME', subtext: "YOU'RE READY.", color: 'var(--accent-green)', tone: 'crush' };
+  }
+  if (score >= 356 && score <= 370) {
+    return { label: 'JACKED AND STACKED', subtext: "YOU'RE READY.", color: 'var(--accent-green)', tone: 'crush' };
+  }
+  if (score >= 371 && score <= 385) {
+    return { label: 'NINJA STATUS', subtext: "YOU'RE MORE THAN READY.", color: 'var(--accent-green)', tone: 'crush' };
+  }
+  if (score >= 386 && score <= 395) {
+    return {
+      label: "THEY DON'T WANT THE SMOKE",
+      subtext: "YOU'RE MORE THAN READY.",
+      color: 'var(--accent-green)',
+      tone: 'crush',
+    };
+  }
+
+  return { label: 'YOU ARE HYROX', subtext: 'ELITE.', color: 'var(--accent-green-bright)', tone: 'elite' };
 }
 
 /** Approximate session points for a single log row (display in workout list) */

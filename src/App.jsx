@@ -32,9 +32,9 @@ export default function App() {
     user,
     profile,
     loading,
-    signInWithGoogle,
     signInWithEmailPassword,
     signUpWithEmailPassword,
+    sendPasswordReset,
     signOut,
     upsertProfile,
   } = useAuth();
@@ -66,9 +66,9 @@ export default function App() {
               <Navigate to="/app" replace />
             ) : (
               <LoginPage
-                onGoogleLogin={signInWithGoogle}
                 onEmailLogin={signInWithEmailPassword}
                 onEmailSignUp={signUpWithEmailPassword}
+                onPasswordReset={sendPasswordReset}
               />
             )
           }
