@@ -73,64 +73,73 @@ export default function LoginPage({ onEmailLogin, onEmailSignUp, onPasswordReset
   return (
     <div className={styles.page}>
       <div className={styles.container}>
-        <p className={styles.logoLabel}>HYROX</p>
-        <h1 className={styles.title}>READY?</h1>
-        <p className={styles.subtitle}>Track your readiness. Crush your race.</p>
+        <div className={styles.authCard}>
+          <div className={styles.header}>
+            <p className={styles.logoLabel}>HYROX</p>
+            <h1 className={styles.title}>READY?</h1>
+            <p className={styles.subtitle}>Track your readiness. Crush your race.</p>
+          </div>
 
-        <div className={styles.modeRow}>
-          {mode === 'signin' ? (
-            <button
-              type="button"
-              className={styles.secondaryLink}
-              onClick={() => setMode('signup')}
-            >
-              Create an account
+          <form className={styles.emailForm} onSubmit={handleCredentials}>
+            <input
+              className={styles.input}
+              type="email"
+              placeholder="Email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="username"
+            />
+            <input
+              className={styles.input}
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+            />
+            {mode === 'signin' && (
+              <div className={styles.resetRow}>
+                <button
+                  type="button"
+                  className={styles.secondaryLink}
+                  onClick={handleResetPassword}
+                >
+                  Reset password
+                </button>
+              </div>
+            )}
+            <button className={styles.primaryBtn} type="submit">
+              {mode === 'signin' ? 'Log in' : 'Create account'}
             </button>
-          ) : (
-            <button
-              type="button"
-              className={styles.secondaryLink}
-              onClick={() => setMode('signin')}
-            >
-              Back to sign in
-            </button>
-          )}
-        </div>
-        <form className={styles.emailForm} onSubmit={handleCredentials}>
-          <input
-            className={styles.input}
-            type="email"
-            placeholder="Username (email)"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoComplete="username"
-          />
-          <input
-            className={styles.input}
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
-          />
-          {mode === 'signin' && (
-            <div className={styles.resetRow}>
+          </form>
+
+          <div className={styles.modeRow}>
+            {mode === 'signin' ? (
               <button
                 type="button"
                 className={styles.secondaryLink}
-                onClick={handleResetPassword}
+                onClick={() => setMode('signup')}
               >
-                Reset password
+                New here? Create an account
               </button>
+            ) : (
+              <button
+                type="button"
+                className={styles.secondaryLink}
+                onClick={() => setMode('signin')}
+              >
+                Already have an account? Back to sign in
+              </button>
+            )}
+          </div>
+
+          {(status || error) && (
+            <div className={styles.feedbackWrap}>
+              {status && <div className={styles.sentMsg}>{status}</div>}
+              {error && <p className={styles.error}>{error}</p>}
             </div>
           )}
-          <button className={styles.primaryBtn} type="submit">
-            {mode === 'signin' ? 'Continue' : 'Sign up'}
-          </button>
-        </form>
-
-        {status && <div className={styles.sentMsg}>{status}</div>}
-        {error && <p className={styles.error}>{error}</p>}
+        </div>
       </div>
     </div>
   );
