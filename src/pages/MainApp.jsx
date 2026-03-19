@@ -96,13 +96,6 @@ export default function MainApp({ profile, onSignOut }) {
             <Link to="/profile" className={styles.avatar} aria-label="Profile">
               {getInitials(profile?.name)}
             </Link>
-            <button
-              type="button"
-              className={styles.logWorkoutTopBtn}
-              onClick={() => setShowWorkout(true)}
-            >
-              Log workout
-            </button>
           </div>
         </div>
       </header>
@@ -131,6 +124,16 @@ export default function MainApp({ profile, onSignOut }) {
             />
           ))}
         </div>
+      </section>
+
+      <section className={`${styles.section} ${styles.ctaSection}`}>
+        <button
+          type="button"
+          className={styles.primaryCta}
+          onClick={() => setShowWorkout(true)}
+        >
+          Log workout
+        </button>
       </section>
 
       <section className={styles.section}>
