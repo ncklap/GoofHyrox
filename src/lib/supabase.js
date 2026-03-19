@@ -10,9 +10,20 @@ const supabaseUrl =
     : rawUrl;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error(
-    'Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY. Copy .env.example to .env and add your Supabase API settings.'
+  const hasUrl = Boolean(supabaseUrl);
+  const hasKey = Boolean(supabaseAnonKey);
+  const rawUrlLen = (rawUrl || '').length;
+  const anonKeyLen = (supabaseAnonKey || '').length;
+
+  // Fail fast so deployed builds clearly show the env injection issue.
+  throw new Error(
+    [
+      'Supabase env vars missing for this build.',
+      `VITE_SUPABASE_URL present: ${hasUrl} (rawUrl length: ${rawUrlLen})`,
+      `VITE_SUPABASE_ANON_KEY present: ${hasKey} (anonKey length: ${anonKeyLen})`,
+      'Ensure these are set in Vercel for Production and redeploy.'
+    ].join(' ')
   );
 }
 
-export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '');
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
