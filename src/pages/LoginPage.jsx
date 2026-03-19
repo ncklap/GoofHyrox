@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './LoginPage.module.css';
 
 export default function LoginPage({ onEmailLogin, onEmailSignUp, onPasswordReset }) {
@@ -7,6 +7,8 @@ export default function LoginPage({ onEmailLogin, onEmailSignUp, onPasswordReset
   const [error, setError] = useState('');
   const [mode, setMode] = useState('signin'); // 'signin' | 'signup'
   const [status, setStatus] = useState('');
+  const [resetCooldownUntil, setResetCooldownUntil] = useState(0);
+  const [cooldownNow, setCooldownNow] = useState(Date.now());
 
   async function handleCredentials(e) {
     e.preventDefault();
@@ -51,6 +53,9 @@ export default function LoginPage({ onEmailLogin, onEmailSignUp, onPasswordReset
   }
 
   async function handleResetPassword() {
+    if (Date.now() < resetCooldownUntil) return;
+    const cooldownMs = 5000;
+    setResetCooldownUntil(Date.now() + cooldownMs);
     setError('');
     setStatus('');
     const trimmedEmail = email.trim();
@@ -64,11 +69,30 @@ export default function LoginPage({ onEmailLogin, onEmailSignUp, onPasswordReset
     }
     const { error: err } = await onPasswordReset(trimmedEmail);
     if (err) {
+      const msg = (err.message || '').toLowerCase();
+      if (msg.includes('rate limit')) {
+        setStatus('Reset link already sent recently. Check your inbox (and spam) or wait a minute before trying again.');
+        return;
+      }
       setError(err.message || 'Could not send reset email.');
       return;
     }
     setStatus('Password reset email sent. Check your inbox.');
   }
+
+  const cooldownRemaining = Math.max(
+    0,
+    Math.ceil((resetCooldownUntil - cooldownNow) / 1000)
+  );
+  const isResetCoolingDown = cooldownRemaining > 0;
+
+  useEffect(() => {
+    if (!isResetCoolingDown) return undefined;
+    const timer = window.setInterval(() => {
+      setCooldownNow(Date.now());
+    }, 250);
+    return () => window.clearInterval(timer);
+  }, [isResetCoolingDown]);
 
   return (
     <div className={styles.page}>
@@ -103,8 +127,9 @@ export default function LoginPage({ onEmailLogin, onEmailSignUp, onPasswordReset
                   type="button"
                   className={styles.secondaryLink}
                   onClick={handleResetPassword}
+                  disabled={isResetCoolingDown}
                 >
-                  Reset password
+                  {isResetCoolingDown ? `Reset password (${cooldownRemaining}s)` : 'Reset password'}
                 </button>
               </div>
             )}

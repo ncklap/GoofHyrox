@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth.js';
 import LoginPage from './pages/LoginPage.jsx';
 import AuthCallback from './pages/AuthCallback.jsx';
+import ResetPasswordPage from './pages/ResetPasswordPage.jsx';
 import MainApp from './pages/MainApp.jsx';
 import Leaderboard from './pages/Leaderboard.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
@@ -35,6 +36,7 @@ export default function App() {
     signInWithEmailPassword,
     signUpWithEmailPassword,
     sendPasswordReset,
+    updatePassword,
     signOut,
     upsertProfile,
   } = useAuth();
@@ -74,6 +76,10 @@ export default function App() {
           }
         />
         <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route
+          path="/reset-password"
+          element={<ResetPasswordPage session={session} onUpdatePassword={updatePassword} />}
+        />
         <Route
           path="/app"
           element={
