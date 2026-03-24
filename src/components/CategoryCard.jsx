@@ -15,7 +15,7 @@ function isRecentLogged(loggedAt) {
   return new Date(loggedAt) >= cutoff;
 }
 
-export default function CategoryCard({ catId, score, workouts = [] }) {
+export default function CategoryCard({ catId, score, workouts = [], profile = null }) {
   const cat = CATEGORIES[catId];
   const pct = Math.min((score / cat.max) * 100, 100);
   const full = pct >= 99.5;
@@ -65,7 +65,7 @@ export default function CategoryCard({ catId, score, workouts = [] }) {
                 !w.is_lift &&
                 !w.is_hyrox &&
                 w.activity_id === s.id &&
-                getWorkoutSessionPoints(w) > 0
+                getWorkoutSessionPoints(w, { profile }) > 0
             );
             return (
               <span

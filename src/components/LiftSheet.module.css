@@ -126,6 +126,116 @@
   margin: 0 0 10px;
 }
 
+.setHeaderRow {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 92px 40px;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.setHeaderCol {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted2);
+}
+
+.setRowsWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.setRow {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 92px 40px;
+  gap: 8px;
+  align-items: start;
+}
+
+.setNum {
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent-green);
+  border-radius: 12px;
+  background: rgba(200, 241, 53, 0.08);
+  border: 1px solid rgba(200, 241, 53, 0.25);
+}
+
+.weightField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.repsField {
+  display: flex;
+  flex-direction: column;
+}
+
+.totalHint {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.2;
+}
+
+.deleteSetBtn {
+  min-height: 52px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-card);
+  color: var(--text);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.deleteSetSpacer {
+  min-height: 52px;
+  display: block;
+}
+
+.addSetBtn {
+  margin-top: 8px;
+  width: 100%;
+  min-height: 48px;
+  border-radius: 12px;
+  border: 1px dashed rgba(200, 241, 53, 0.45);
+  background: rgba(200, 241, 53, 0.07);
+  color: var(--accent-green);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.addSetBtn:hover {
+  background: rgba(200, 241, 53, 0.12);
+}
+
+.formError {
+  margin: 8px 0 0;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--accent-red);
+}
+
+.optionalHint {
+  margin: 8px 0 0;
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--muted);
+}
+
 .trackingGrid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -152,12 +262,13 @@
 .trackingInput {
   width: 100%;
   font-family: var(--font-display);
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
   text-align: center;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 13px;
+  min-height: 52px;
   padding: 12px 8px;
   color: var(--text);
   outline: none;
@@ -166,6 +277,20 @@
 
 .trackingInput:focus {
   border-color: rgba(255, 255, 255, 0.28);
+}
+
+.trackingSummaryValue {
+  margin: 0;
+  min-height: 52px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
 }
 
 .saveBtn {

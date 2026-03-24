@@ -32,6 +32,7 @@
   border-radius: 16px;
   padding: 18px 20px;
   animation: fadeUp 0.4s ease forwards;
+  scroll-margin-bottom: 96px;
 }
 
 @keyframes fadeUp {

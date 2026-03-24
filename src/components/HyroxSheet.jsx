@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import BottomSheet from './BottomSheet.jsx';
-import { CATEGORIES, CATEGORY_ORDER, CATEGORY_PREVIEW } from '../lib/constants.js';
+import { CATEGORIES, CATEGORY_ORDER, CATEGORY_PREVIEW, CATEGORY_SUM_MAX } from '../lib/constants.js';
+import { getHyroxSessionPoints } from '../lib/scoring.js';
 import styles from './HyroxSheet.module.css';
 
 const LENGTHS = [
@@ -10,11 +11,13 @@ const LENGTHS = [
 ];
 
 function hyroxPreviewLine(length, intensity) {
-  if (!length) return '';
-  const c = length.pct;
-  const m = intensity === 'hard' ? 0.75 : 1;
-  const parts = CATEGORY_ORDER.map(cat => {
-    const pts = Math.round(CATEGORIES[cat].max * c * m);
+  if (!length || !intensity) return '';
+  const sessionPts = getHyroxSessionPoints({
+    hyrox_length: length.id,
+    hyrox_intensity: intensity,
+  });
+  const parts = CATEGORY_ORDER.map((cat) => {
+    const pts = Math.round(sessionPts * (CATEGORIES[cat].max / CATEGORY_SUM_MAX));
     const { icon, label } = CATEGORY_PREVIEW[cat];
     return `${icon} ${label} +${pts}`;
   });
@@ -93,7 +96,7 @@ export default function HyroxSheet({ open, onClose, onLog }) {
               onClick={() => setIntensity('easy')}
             >
               <span className={styles.intEmoji} aria-hidden>😎</span>
-              <span className={styles.intLabel}>Easy</span>
+              <span className={styles.intLabel}>Comfortable / in control</span>
               <span className={styles.intSub}>Felt solid</span>
             </button>
             <button
@@ -102,7 +105,7 @@ export default function HyroxSheet({ open, onClose, onLog }) {
               onClick={() => setIntensity('hard')}
             >
               <span className={styles.intEmoji} aria-hidden>😤</span>
-              <span className={styles.intLabel}>Hard</span>
+              <span className={styles.intLabel}>Challenging / at my limit</span>
               <span className={styles.intSub}>It was rough</span>
             </button>
           </div>

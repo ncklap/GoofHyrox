@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import BottomSheet from './BottomSheet.jsx';
-import { ACTIVITY_LABELS, LIFT_LABELS } from '../lib/constants.js';
+import {
+  ACTIVITY_LABELS,
+  LIFT_LABELS,
+  LEGACY_ERG_METERS_THRESHOLD,
+  LABEL_INTENSITY_CHALLENGING,
+  LABEL_INTENSITY_COMFORTABLE,
+} from '../lib/constants.js';
 import styles from './TrainingCalendarSheet.module.css';
 
 function monthStart(d) {
@@ -35,32 +41,88 @@ function workoutName(w) {
   return ACTIVITY_LABELS[w.activity_id] || 'Workout';
 }
 
-function formatKmFromMeters(meters) {
+function formatRunDistance(meters, distanceUnit) {
   if (meters === null || meters === undefined || meters === '') return '';
   const n = Number(meters);
   if (!Number.isFinite(n)) return '';
-  const km = n / 1000;
-  const rounded1 = Math.round(km * 10) / 10;
+  const base = distanceUnit === 'miles' ? (n / 1609.344) : (n / 1000);
+  const rounded1 = Math.round(base * 10) / 10;
   return rounded1 % 1 === 0 ? String(Math.round(rounded1)) : String(rounded1);
 }
 
-function workoutDetail(w) {
+function formatDuration(totalSeconds) {
+  const n = Number(totalSeconds);
+  if (!Number.isFinite(n) || n <= 0) return null;
+  const m = Math.floor(n / 60);
+  const s = Math.round(n % 60);
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
+function workoutDetail(w, distanceUnit) {
   if (w.is_lift) {
     return w.heavy ? 'Heavy' : 'Light';
   }
   if (w.is_hyrox) {
     const len = w.hyrox_length === 'full' ? 'Full' : w.hyrox_length === 'half' ? 'Half' : 'Quarter';
-    const intensity = w.hyrox_intensity === 'hard' ? 'Hard' : 'Easy';
+    const intensity = w.hyrox_intensity === 'hard' ? LABEL_INTENSITY_CHALLENGING : LABEL_INTENSITY_COMFORTABLE;
     return `${len} · ${intensity}`;
   }
 
-  const valueDisplay = w.activity_id === 'run' ? formatKmFromMeters(w.value) : String(w.value ?? '');
-  const unit = w.activity_id === 'run' ? 'km' : w.activity_id === 'wallball' ? 'reps' : 'm';
-  const intensity = w.hard ? 'Hard' : 'Easy';
-  return `${valueDisplay}${unit} · ${intensity}`;
+  const intensity = w.hard ? LABEL_INTENSITY_CHALLENGING : LABEL_INTENSITY_COMFORTABLE;
+  const bits = [];
+
+  if (Number.isFinite(Number(w.distance_km)) && Number(w.distance_km) > 0) {
+    const meters = Number(w.distance_km) * 1000;
+    bits.push(`${formatRunDistance(meters, distanceUnit)}${distanceUnit === 'miles' ? 'mi' : 'km'}`);
+  } else if (Number.isFinite(Number(w.distance_m)) && Number(w.distance_m) > 0) {
+    bits.push(`${Math.round(Number(w.distance_m))}m`);
+  } else if (w.activity_id === 'skierg' || w.activity_id === 'rowing') {
+    const v = Number(w.value);
+    if (Number.isFinite(v) && v > 0 && v < LEGACY_ERG_METERS_THRESHOLD) {
+      bits.push(`${formatDuration(v)}/500m`);
+    } else {
+      bits.push(`${w.value ?? ''}m`);
+    }
+  } else {
+    const valueDisplay = w.activity_id === 'run'
+      ? formatRunDistance(w.value, distanceUnit)
+      : String(w.value ?? '');
+    const unit = w.activity_id === 'run'
+      ? (distanceUnit === 'miles' ? 'mi' : 'km')
+      : w.activity_id === 'wallball'
+        ? 'reps'
+        : 'm';
+    bits.push(`${valueDisplay}${unit}`);
+  }
+
+  const duration = formatDuration(w.duration_seconds);
+  if (duration) bits.push(duration);
+
+  if (Number.isFinite(Number(w.pace_per_unit)) && Number(w.pace_per_unit) > 0) {
+    const totalSec = Math.round(Number(w.pace_per_unit) * 60);
+    const pm = Math.floor(totalSec / 60);
+    const ps = totalSec % 60;
+    const paceUnit = w.activity_id === 'run' ? (distanceUnit === 'miles' ? 'mi' : 'km') : 'm';
+    bits.push(`${pm}:${String(ps).padStart(2, '0')}/${paceUnit}`);
+  }
+
+  if (Number.isFinite(Number(w.station_weight_lbs)) && Number(w.station_weight_lbs) > 0) {
+    bits.push(`${Math.round(Number(w.station_weight_lbs))}lbs`);
+  }
+  if (Number.isFinite(Number(w.station_reps)) && Number(w.station_reps) > 0) {
+    bits.push(`${Math.round(Number(w.station_reps))} reps`);
+  }
+
+  bits.push(intensity);
+  return bits.join(' · ');
 }
 
-export default function TrainingCalendarSheet({ open, onClose, workouts }) {
+export default function TrainingCalendarSheet({
+  open,
+  onClose,
+  workouts,
+  distanceUnit = 'km',
+}) {
   const [viewMonth, setViewMonth] = useState(() => monthStart(new Date()));
   const [popup, setPopup] = useState(null);
   const popupTimerRef = useRef(null);
@@ -237,7 +299,7 @@ export default function TrainingCalendarSheet({ open, onClose, workouts }) {
               {popup.workouts.map((w) => (
                 <div key={w.id} className={styles.popupRow}>
                   <span className={styles.popupName}>{workoutName(w)}</span>
-                  <span className={styles.popupDetail}>{workoutDetail(w)}</span>
+                  <span className={styles.popupDetail}>{workoutDetail(w, distanceUnit)}</span>
                 </div>
               ))}
             </div>

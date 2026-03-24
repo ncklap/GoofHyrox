@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  ACTIVITY_LABELS,
-  ACTIVITY_ICONS,
-  LIFT_LABELS,
-  LIFT_ICONS,
-} from '../lib/constants.js';
 import { getWorkoutSessionPoints } from '../lib/scoring.js';
+import {
+  formatDate,
+  workoutIcon,
+  workoutTitle,
+  liftTrackingMeta,
+} from '../lib/workoutFormatters.js';
 import ConfirmDialog from './ConfirmDialog.jsx';
 import TrainingCalendarSheet from './TrainingCalendarSheet.jsx';
 import styles from './WorkoutLog.module.css';
@@ -16,86 +16,14 @@ function isRecent(loggedAt) {
   return new Date(loggedAt) >= cutoff;
 }
 
-function formatDate(dateStr) {
-  const d = new Date(dateStr);
-  const today = new Date();
-  if (d.toDateString() === today.toDateString()) return 'Today';
-
-  const now = new Date();
-  const diffMs = now - d;
-  const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
-  if (diffHrs < 24) return `${diffHrs}h ago`;
-  const diffDays = Math.floor(diffHrs / 24);
-  if (diffDays === 1) return 'Yesterday';
-  if (diffDays < 7) return `${diffDays}d ago`;
-  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-}
-
-function workoutIcon(w) {
-  if (w.is_hyrox) return '🏁';
-  if (w.is_lift) return LIFT_ICONS[w.lift_id] || '🏋️';
-  return ACTIVITY_ICONS[w.activity_id] || '•';
-}
-
-function workoutTitle(w) {
-  if (w.is_hyrox) {
-    const len = w.hyrox_length === 'full' ? 'Full' : w.hyrox_length === 'half' ? 'Half' : 'Quarter';
-    const feel = w.hyrox_intensity === 'hard' ? 'Hard' : 'Easy';
-    return `Hyrox ${len} · ${feel}`;
-  }
-  if (w.is_lift) {
-    const load = w.heavy ? 'Heavy' : 'Light';
-    return `${LIFT_LABELS[w.lift_id] || w.lift_id} · ${load}`;
-  }
-  const label = ACTIVITY_LABELS[w.activity_id] || w.activity_id;
-  const unit = w.activity_id === 'wallball' ? 'reps' : w.activity_id === 'run' ? 'km' : 'm';
-  const valueDisplay = w.activity_id === 'run' ? formatKmFromMeters(w.value) : w.value;
-  const feel = w.hard ? 'Hard' : 'Easy';
-  return `${label} · ${valueDisplay}${unit} · ${feel}`;
-}
-
-function liftTrackingMeta(w) {
-  if (!w?.is_lift) return null;
-
-  const parts = [];
-
-  const weightNum = w.lift_weight_kg !== null && w.lift_weight_kg !== undefined && w.lift_weight_kg !== ''
-    ? Number(w.lift_weight_kg)
-    : null;
-  if (weightNum !== null && Number.isFinite(weightNum)) {
-    parts.push(`${Math.round(weightNum)}kg`);
-  }
-
-  const setsNum = w.lift_sets !== null && w.lift_sets !== undefined && w.lift_sets !== ''
-    ? Number(w.lift_sets)
-    : null;
-  const repsNum = w.lift_reps !== null && w.lift_reps !== undefined && w.lift_reps !== ''
-    ? Number(w.lift_reps)
-    : null;
-
-  if (setsNum !== null && Number.isFinite(setsNum) && repsNum !== null && Number.isFinite(repsNum)) {
-    parts.push(`${Math.round(setsNum)}×${Math.round(repsNum)}`);
-  } else if (setsNum !== null && Number.isFinite(setsNum)) {
-    parts.push(`${Math.round(setsNum)} sets`);
-  } else if (repsNum !== null && Number.isFinite(repsNum)) {
-    parts.push(`${Math.round(repsNum)} reps`);
-  }
-
-  if (parts.length === 0) return null;
-  return parts.join(' · ');
-}
-
-function formatKmFromMeters(meters) {
-  if (meters === null || meters === undefined || meters === '') return '';
-  const n = Number(meters);
-  if (!Number.isFinite(n)) return '';
-  const km = n / 1000;
-  // Display either whole km or one decimal place.
-  const rounded1 = Math.round(km * 10) / 10;
-  return rounded1 % 1 === 0 ? String(Math.round(rounded1)) : String(rounded1);
-}
-
-export default function WorkoutLog({ workouts, onDelete }) {
+export default function WorkoutLog({
+  workouts,
+  onDelete,
+  onWorkoutClick,
+  weightUnit = 'kg',
+  distanceUnit = 'km',
+  profile = null,
+}) {
   const TOP_OFFSET = 0;
   const SLOT = 79;
   const NEW_TOP = -74;
@@ -180,8 +108,8 @@ export default function WorkoutLog({ workouts, onDelete }) {
   const maxPts = useMemo(() => {
     const basis = animPhase === 'ACTIVE' ? animTargetVisible : visibleWorkouts;
     if (!basis.length) return 0;
-    return Math.max(0, ...basis.map(w => getWorkoutSessionPoints(w)));
-  }, [animPhase, animTargetVisible, visibleWorkouts]);
+    return Math.max(0, ...basis.map(w => getWorkoutSessionPoints(w, { profile })));
+  }, [animPhase, animTargetVisible, visibleWorkouts, profile]);
 
   const pendingWorkout = pendingId ? workouts.find(w => w.id === pendingId) : null;
   const workoutsThisMonth = useMemo(() => {
@@ -237,7 +165,7 @@ export default function WorkoutLog({ workouts, onDelete }) {
   const renderRow = (w, { disableDelete, allowExpiredDim, onRowClick, rowStyle }) => {
     const recent = isRecent(w.logged_at);
 
-    const pts = getWorkoutSessionPoints(w);
+    const pts = getWorkoutSessionPoints(w, { profile });
     const ratio = maxPts > 0 ? pts / maxPts : 0;
     const pct = Math.min(ratio * 100, 100);
 
@@ -261,10 +189,10 @@ export default function WorkoutLog({ workouts, onDelete }) {
         <div className={styles.left}>
           <span className={styles.emoji} aria-hidden>{workoutIcon(w)}</span>
           <div className={styles.textCol}>
-            <span className={styles.name}>{workoutTitle(w)}</span>
+            <span className={styles.name}>{workoutTitle(w, distanceUnit)}</span>
             {w.is_lift && (
               <span className={styles.meta}>
-                {liftTrackingMeta(w)}
+                {liftTrackingMeta(w, weightUnit)}
               </span>
             )}
           </div>
@@ -375,7 +303,7 @@ export default function WorkoutLog({ workouts, onDelete }) {
               {renderRow(w, {
                 disableDelete: false,
                 allowExpiredDim: true,
-                onRowClick: undefined,
+                onRowClick: () => onWorkoutClick?.(w),
                 rowStyle,
               })}
             </div>
@@ -386,7 +314,7 @@ export default function WorkoutLog({ workouts, onDelete }) {
           renderRow(incomingWorkout, {
             disableDelete: true,
             allowExpiredDim: true,
-            onRowClick: undefined,
+            onRowClick: () => onWorkoutClick?.(incomingWorkout),
             rowStyle:
               animPhase !== 'ACTIVE'
                 ? (animMode === 'TOP_ENTRY'
@@ -465,7 +393,7 @@ export default function WorkoutLog({ workouts, onDelete }) {
               {renderRow(w, {
                 disableDelete: true,
                 allowExpiredDim: false,
-                onRowClick: undefined,
+                onRowClick: () => onWorkoutClick?.(w),
                 rowStyle: undefined,
               })}
             </div>
@@ -488,6 +416,7 @@ export default function WorkoutLog({ workouts, onDelete }) {
         open={showCalendar}
         onClose={() => setShowCalendar(false)}
         workouts={workouts}
+        distanceUnit={distanceUnit}
       />
 
       <ConfirmDialog

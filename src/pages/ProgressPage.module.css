@@ -1,0 +1,299 @@
+.page {
+  max-width: 390px;
+  margin: 0 auto;
+  padding: 0 20px 100px;
+  min-height: 100dvh;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 52px;
+  margin-bottom: 8px;
+}
+
+.appName {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.backLink {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--muted2);
+  text-decoration: none;
+}
+
+.backLink:hover {
+  color: var(--text);
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 14px 16px;
+}
+
+.span2 {
+  grid-column: span 2;
+}
+
+.cardLabel {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+}
+
+.cardValue {
+  margin: 8px 0 0;
+  color: var(--accent-green);
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.suffix {
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+.cardSub {
+  margin: 8px 0 0;
+  color: var(--muted2);
+  font-family: var(--font-body);
+  font-size: 12px;
+}
+
+.prRow {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.prPill {
+  white-space: nowrap;
+  border-radius: 999px;
+  border: 1px solid rgba(232, 255, 90, 0.45);
+  color: var(--accent-green-bright);
+  background: rgba(232, 255, 90, 0.08);
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+.chartTabs {
+  margin-top: 16px;
+}
+
+.tabRow {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.tabBtn {
+  min-height: 48px;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+
+.tabActive {
+  color: var(--accent-green);
+  border-bottom-color: var(--accent-green);
+}
+
+.rangeRow {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.rangeBtn {
+  min-height: 40px;
+  min-width: 52px;
+  border-radius: 999px;
+  background: var(--bg-card);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.rangeActive {
+  color: #0a0a0a;
+  background: var(--accent-green);
+  border-color: var(--accent-green);
+  font-weight: 700;
+}
+
+.chartCard {
+  margin-top: 10px;
+  background: #111;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  padding: 10px;
+}
+
+.canvasWrap {
+  height: 280px;
+}
+
+.legendRow {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted2);
+  font-family: var(--font-body);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+}
+
+.loading {
+  margin: 0;
+  min-height: 160px;
+  display: grid;
+  place-items: center;
+  color: var(--muted2);
+  font-family: var(--font-body);
+  font-size: 14px;
+}
+
+.muted {
+  margin: 8px 0 0;
+  color: var(--muted2);
+  font-size: 12px;
+  font-family: var(--font-body);
+}
+
+.nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 390px;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 8px calc(10px + env(safe-area-inset-bottom, 0));
+  z-index: 50;
+}
+
+.navLink {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 2px;
+  transition: color 0.2s;
+}
+
+.active {
+  color: var(--accent-green);
+}
+
+.navLink:hover {
+  color: var(--accent-green);
+}
+
+.prRow::-webkit-scrollbar,
+.tabRow::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 420px) {
+  .page {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .summaryGrid {
+    gap: 8px;
+  }
+
+  .card {
+    padding: 10px;
+  }
+
+  .cardValue {
+    font-size: 21px;
+  }
+
+  .tabBtn {
+    min-height: 44px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .rangeBtn {
+    min-height: 38px;
+    min-width: 48px;
+    font-size: 12px;
+  }
+
+  .chartCard {
+    padding: 8px;
+  }
+
+  .canvasWrap {
+    height: 240px;
+  }
+
+  .legendRow {
+    gap: 8px;
+  }
+
+  .legendItem {
+    font-size: 11px;
+  }
+}

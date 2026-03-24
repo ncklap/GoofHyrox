@@ -67,6 +67,31 @@
   gap: 14px;
 }
 
+.unitToggleRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.unitToggleBtn {
+  min-height: 40px;
+  border-radius: 11px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--muted2);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.unitToggleActive {
+  color: var(--accent-green);
+  border-color: rgba(200, 241, 53, 0.5);
+  background: rgba(200, 241, 53, 0.08);
+}
+
 .unitLabel {
   font-family: var(--font-body);
   font-size: 10px;
@@ -79,6 +104,61 @@
 
 .inputRow {
   width: 100%;
+}
+
+.runExtras {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.extraLabel {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.timeRow {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.timeInput {
+  width: 100%;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  text-align: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 12px 10px;
+  color: var(--text);
+  outline: none;
+}
+
+.timeInput:focus {
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.timeSep {
+  font-family: var(--font-display);
+  font-size: 20px;
+  color: var(--muted2);
+}
+
+.paceHint {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--accent-green);
+  text-align: center;
 }
 
 .input {

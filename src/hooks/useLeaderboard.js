@@ -62,7 +62,7 @@ export function useLeaderboard() {
 
     const board = profiles.map(profile => {
       const userWorkouts = (workouts || []).filter(w => w.user_id === profile.id);
-      const scores = computeScores(userWorkouts);
+      const scores = computeScores(userWorkouts, { profile });
       const verdict = getVerdict(scores.total, userWorkouts.length > 0);
       return {
         profile,

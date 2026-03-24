@@ -10,6 +10,7 @@ import WorkoutLog from '../components/WorkoutLog.jsx';
 import LogWorkoutSheet from '../components/LogWorkoutSheet.jsx';
 import LiftSheet from '../components/LiftSheet.jsx';
 import HyroxSheet from '../components/HyroxSheet.jsx';
+import WorkoutDetailSheet from '../components/WorkoutDetailSheet.jsx';
 import MotivateMe from '../components/MotivateMe.jsx';
 import Toast from '../components/Toast.jsx';
 import styles from './MainApp.module.css';
@@ -19,20 +20,44 @@ function getInitials(name) {
   return name.split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2);
 }
 
+function toLocalDayKey(dateStr) {
+  const d = new Date(dateStr);
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+}
+
+function computeDayStreak(workouts) {
+  if (!Array.isArray(workouts) || workouts.length === 0) return 0;
+  const workoutDays = new Set(workouts.map((w) => toLocalDayKey(w.logged_at)));
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  let streak = 0;
+  const cursor = new Date(today);
+  while (workoutDays.has(`${cursor.getFullYear()}-${cursor.getMonth()}-${cursor.getDate()}`)) {
+    streak += 1;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  return streak;
+}
+
 export default function MainApp({ profile, onSignOut }) {
-  const { workouts, addWorkout, deleteWorkout } = useWorkouts(profile?.id);
+  const { workouts, addWorkout, deleteWorkout, updateWorkout } = useWorkouts(profile?.id);
+  const weightUnit = profile?.weight_unit === 'lbs' ? 'lbs' : 'kg';
+  const distanceUnit = profile?.distance_unit === 'miles' ? 'miles' : 'km';
   const [showWorkout, setShowWorkout] = useState(false);
   const [showLift, setShowLift] = useState(false);
   const [showHyrox, setShowHyrox] = useState(false);
+  const [selectedWorkout, setSelectedWorkout] = useState(null);
   const [toast, setToast] = useState({ visible: false, message: '' });
 
-  const scores = useMemo(() => computeScores(workouts), [workouts]);
+  const scores = useMemo(() => computeScores(workouts, { profile }), [workouts, profile]);
   const verdict = useMemo(
     () => getVerdict(scores.total, workouts.length > 0),
     [scores.total, workouts.length]
   );
   const daysLeft = getDaysUntilRace(profile?.race_date);
   const showCapWarning = scores.coreZeros >= 1;
+  const dayStreak = useMemo(() => computeDayStreak(workouts), [workouts]);
 
   const handleLog = useCallback(async (data) => {
     const toastMsg = data.__toast;
@@ -64,6 +89,19 @@ export default function MainApp({ profile, onSignOut }) {
     await deleteWorkout(id);
     setToast({ visible: true, message: 'Workout deleted' });
   }, [deleteWorkout]);
+
+  const handleUpdateWorkout = useCallback(
+    async (workoutId, patch) => {
+      const { data, error } = await updateWorkout(workoutId, patch);
+      if (!error && data) setSelectedWorkout(data);
+      setToast({
+        visible: true,
+        message: error ? (error.message || 'Update failed') : 'Workout updated ✓',
+      });
+      return { data, error };
+    },
+    [updateWorkout]
+  );
 
   return (
     <div className={styles.page}>
@@ -108,6 +146,11 @@ export default function MainApp({ profile, onSignOut }) {
       </header>
 
       <VerdictDisplay verdict={verdict} />
+      {dayStreak > 0 && (
+        <div className={styles.streakRow}>
+          <span className={styles.streakChip}>{dayStreak} day streak 🔥</span>
+        </div>
+      )}
       <ReadinessMeter
         score={scores.total}
         hasWorkouts={workouts.length > 0}
@@ -130,6 +173,7 @@ export default function MainApp({ profile, onSignOut }) {
               catId={cat}
               score={scores.categories[cat]}
               workouts={workouts}
+              profile={profile}
             />
           ))}
         </div>
@@ -137,7 +181,14 @@ export default function MainApp({ profile, onSignOut }) {
 
       <div className={styles.logSection}>
         <section className={styles.section}>
-          <WorkoutLog workouts={workouts} onDelete={handleDelete} />
+          <WorkoutLog
+            workouts={workouts}
+            onDelete={handleDelete}
+            onWorkoutClick={setSelectedWorkout}
+            weightUnit={weightUnit}
+            distanceUnit={distanceUnit}
+            profile={profile}
+          />
         </section>
         <section className={`${styles.section} ${styles.ctaSection}`}>
           <button
@@ -163,6 +214,7 @@ export default function MainApp({ profile, onSignOut }) {
 
       <nav className={styles.nav}>
         <Link to="/app" className={`${styles.navLink} ${styles.active}`}>Home</Link>
+        <Link to="/progress" className={styles.navLink}>Progress</Link>
         <Link to="/leaderboard" className={styles.navLink}>Board</Link>
         <Link to="/profile" className={styles.navLink}>Profile</Link>
       </nav>
@@ -173,9 +225,27 @@ export default function MainApp({ profile, onSignOut }) {
         onLog={handleLog}
         onOpenLift={openLiftAfterClose}
         onOpenHyrox={openHyroxAfterClose}
+        distanceUnit={distanceUnit}
+        profile={profile}
       />
-      <LiftSheet open={showLift} onClose={() => setShowLift(false)} onLog={handleLog} />
+      <LiftSheet
+        open={showLift}
+        onClose={() => setShowLift(false)}
+        onLog={handleLog}
+        weightUnit={weightUnit}
+      />
       <HyroxSheet open={showHyrox} onClose={() => setShowHyrox(false)} onLog={handleLog} />
+      <WorkoutDetailSheet
+        open={!!selectedWorkout}
+        workout={selectedWorkout}
+        workouts={workouts}
+        userId={profile?.id}
+        onClose={() => setSelectedWorkout(null)}
+        distanceUnit={distanceUnit}
+        weightUnit={weightUnit}
+        profile={profile}
+        onUpdateWorkout={handleUpdateWorkout}
+      />
     </div>
   );
 }

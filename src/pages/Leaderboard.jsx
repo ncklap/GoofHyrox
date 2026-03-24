@@ -98,6 +98,7 @@ export default function Leaderboard({ currentUserId }) {
 
       <nav className={styles.nav}>
         <Link to="/app" className={styles.navLink}>Home</Link>
+        <Link to="/progress" className={styles.navLink}>Progress</Link>
         <Link to="/leaderboard" className={`${styles.navLink} ${styles.active}`}>Board</Link>
         <Link to="/profile" className={styles.navLink}>Profile</Link>
       </nav>

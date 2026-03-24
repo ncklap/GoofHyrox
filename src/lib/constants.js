@@ -19,6 +19,103 @@ export const CATEGORIES = {
   fullbody: { max: 75,  core: false },
 };
 
+/** Sum of category max scores — used to split Hyrox session points */
+export const CATEGORY_SUM_MAX = Object.values(CATEGORIES).reduce((s, c) => s + c.max, 0);
+
+/** Official-style station targets by division (kg where noted; distances in m) */
+export const DIVISION_TARGETS = {
+  male_open: {
+    sled_push: 152,
+    sled_pull: 102,
+    farmers_carry: 24,
+    sandbag_lunges: 20,
+    wall_balls: { weight: 6, reps: 100, height: 3.0 },
+    ski_erg: { distance: 1000 },
+    row: { distance: 1000 },
+    burpee: { distance: 80 },
+  },
+  female_open: {
+    sled_push: 102,
+    sled_pull: 72,
+    farmers_carry: 16,
+    sandbag_lunges: 10,
+    wall_balls: { weight: 4, reps: 75, height: 2.7 },
+    ski_erg: { distance: 1000 },
+    row: { distance: 1000 },
+    burpee: { distance: 80 },
+  },
+  male_pro: {
+    sled_push: 202,
+    sled_pull: 152,
+    farmers_carry: 32,
+    sandbag_lunges: 30,
+    wall_balls: { weight: 9, reps: 100, height: 3.0 },
+    ski_erg: { distance: 1000 },
+    row: { distance: 1000 },
+    burpee: { distance: 80 },
+  },
+  female_pro: {
+    sled_push: 152,
+    sled_pull: 102,
+    farmers_carry: 24,
+    sandbag_lunges: 20,
+    wall_balls: { weight: 6, reps: 100, height: 2.7 },
+    ski_erg: { distance: 1000 },
+    row: { distance: 1000 },
+    burpee: { distance: 80 },
+  },
+  mixed_doubles: {
+    sled_push: 152,
+    sled_pull: 102,
+    farmers_carry: 24,
+    sandbag_lunges: 20,
+    wall_balls: { weight: 6, reps: 100, height: 3.0 },
+    ski_erg: { distance: 1000 },
+    row: { distance: 1000 },
+    burpee: { distance: 80 },
+  },
+};
+
+/** Target 500m split in seconds (lower is faster) */
+export const ROW_SKI_TARGETS = {
+  male_open: 120,
+  female_open: 135,
+  male_pro: 105,
+  female_pro: 120,
+  mixed_doubles: 120,
+};
+
+export const DEFAULT_DIVISION_KEY = 'male_open';
+
+/** Workouts with value >= this (meters) use legacy distance scoring for SkiErg/Row */
+export const LEGACY_ERG_METERS_THRESHOLD = 400;
+
+/**
+ * Maps profile.hyrox_race_type (single/double/pro) to division keys.
+ * Gender-specific divisions are not in profile yet; adjust when added.
+ */
+export function resolveDivisionKeyFromProfile(profile) {
+  const t = profile?.hyrox_race_type;
+  if (t === 'pro') return 'male_pro';
+  if (t === 'double') return 'mixed_doubles';
+  return DEFAULT_DIVISION_KEY;
+}
+
+export function getDivisionTargets(divisionKey) {
+  return DIVISION_TARGETS[divisionKey] || DIVISION_TARGETS[DEFAULT_DIVISION_KEY];
+}
+
+export function formatSplitSeconds(totalSec) {
+  const s = Math.max(0, Math.round(Number(totalSec) || 0));
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${m}:${String(r).padStart(2, '0')}`;
+}
+
+/** User-facing intensity copy (stored values unchanged: hard / easy / boolean hard) */
+export const LABEL_INTENSITY_CHALLENGING = 'Challenging / at my limit';
+export const LABEL_INTENSITY_COMFORTABLE = 'Comfortable / in control';
+
 /** Category keys in Hyrox preview order */
 export const CATEGORY_ORDER = ['run', 'skirow', 'sled', 'carry', 'fullbody'];
 

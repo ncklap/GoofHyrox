@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import BottomSheet from './BottomSheet.jsx';
 import {
   ACTIVITY_LABELS,
@@ -8,14 +8,42 @@ import {
   CATEGORY_ICONS,
   getActivitiesForCategory,
   formatActivityTargetHint,
+  resolveDivisionKeyFromProfile,
+  ROW_SKI_TARGETS,
+  formatSplitSeconds,
+  DEFAULT_DIVISION_KEY,
 } from '../lib/constants.js';
+import OptionalFields from './OptionalFields.jsx';
 import styles from './LogWorkoutSheet.module.css';
 
-export default function LogWorkoutSheet({ open, onClose, onLog, onOpenLift, onOpenHyrox }) {
+function formatDistanceHintMeters(meters, distanceUnit) {
+  const n = Number(meters);
+  if (!Number.isFinite(n)) return '';
+  if (distanceUnit === 'miles') {
+    const miles = n / 1609.344;
+    const rounded = Math.round(miles * 10) / 10;
+    return `${rounded % 1 === 0 ? Math.round(rounded) : rounded}mi`;
+  }
+  if (n >= 1000) return `${n / 1000}km`;
+  return `${n}m`;
+}
+
+export default function LogWorkoutSheet({
+  open,
+  onClose,
+  onLog,
+  onOpenLift,
+  onOpenHyrox,
+  distanceUnit = 'km',
+  profile = null,
+}) {
   const [step, setStep] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [activity, setActivity] = useState(null);
   const [value, setValue] = useState('');
+  const [ergSplitMin, setErgSplitMin] = useState('');
+  const [ergSplitSec, setErgSplitSec] = useState('');
+  const [optionalDetails, setOptionalDetails] = useState({});
   const [highlightId, setHighlightId] = useState(null);
   const [feltHard, setFeltHard] = useState(null);
   const inputRef = useRef(null);
@@ -23,12 +51,34 @@ export default function LogWorkoutSheet({ open, onClose, onLog, onOpenLift, onOp
 
   const activitiesInCategory = selectedCategory ? getActivitiesForCategory(selectedCategory) : [];
   const hasStationStep = activitiesInCategory.length > 1;
+  const isErg = activity && (activity.id === 'skierg' || activity.id === 'rowing');
+
+  const divisionKey = useMemo(
+    () => resolveDivisionKeyFromProfile(profile),
+    [profile]
+  );
+  const targetSplitSec = ROW_SKI_TARGETS[divisionKey] ?? ROW_SKI_TARGETS[DEFAULT_DIVISION_KEY];
+
+  const ergSplitSeconds = useMemo(() => {
+    if (!isErg) return null;
+    const mm = parseInt(ergSplitMin, 10);
+    const ssRaw = parseInt(ergSplitSec, 10);
+    const hasAny = ergSplitMin.trim() !== '' || ergSplitSec.trim() !== '';
+    if (!hasAny) return null;
+    const m = Number.isFinite(mm) ? mm : 0;
+    const s = Number.isFinite(ssRaw) ? Math.min(ssRaw, 59) : 0;
+    const total = m * 60 + s;
+    return total > 0 ? total : null;
+  }, [isErg, ergSplitMin, ergSplitSec]);
 
   function reset() {
     setStep(0);
     setSelectedCategory(null);
     setActivity(null);
     setValue('');
+    setErgSplitMin('');
+    setErgSplitSec('');
+    setOptionalDetails({});
     setHighlightId(null);
     setFeltHard(null);
   }
@@ -52,6 +102,9 @@ export default function LogWorkoutSheet({ open, onClose, onLog, onOpenLift, onOp
       setActivity(activities[0]);
       setStep(2);
       setFeltHard(null);
+      setValue('');
+      setErgSplitMin('');
+      setErgSplitSec('');
     } else {
       setSelectedCategory(catId);
       setActivity(null);
@@ -69,6 +122,9 @@ export default function LogWorkoutSheet({ open, onClose, onLog, onOpenLift, onOp
       setStep(2);
       setHighlightId(null);
       setFeltHard(null);
+      setValue('');
+      setErgSplitMin('');
+      setErgSplitSec('');
     }, 120);
   }
 
@@ -88,11 +144,15 @@ export default function LogWorkoutSheet({ open, onClose, onLog, onOpenLift, onOp
         setStep(1);
         setActivity(null);
         setValue('');
+        setErgSplitMin('');
+        setErgSplitSec('');
       } else {
         setStep(0);
         setSelectedCategory(null);
         setActivity(null);
         setValue('');
+        setErgSplitMin('');
+        setErgSplitSec('');
       }
     } else if (step === 1) {
       setStep(0);
@@ -101,18 +161,50 @@ export default function LogWorkoutSheet({ open, onClose, onLog, onOpenLift, onOp
   }
 
   const numOk = (() => {
+    if (isErg) {
+      return ergSplitSeconds !== null && ergSplitSeconds > 0;
+    }
     const n = parseFloat(value);
     return Number.isFinite(n) && n > 0;
   })();
 
   async function saveWorkout() {
     if (feltHard === null || !activity) return;
-    const n = parseFloat(value);
-    // Run is stored/scored in meters, but user enters kilometers.
-    const storedValue = activity.id === 'run' ? n * 1000 : parseInt(value, 10);
+    const mode = optionalDetails.mode || 'distance';
+    const mainIsDistance = mode !== 'reps';
+
+    let storedValue;
+    let distanceKm = null;
+    let distanceM = null;
+    let stationReps;
+
+    if (isErg) {
+      storedValue = ergSplitSeconds;
+      distanceKm = null;
+      distanceM = null;
+      stationReps = optionalDetails.stationReps ?? null;
+    } else {
+      const n = parseFloat(value);
+      storedValue = activity.id === 'run'
+        ? n * 1000
+        : parseInt(value, 10);
+      distanceKm = activity.id === 'run' && mainIsDistance && Number.isFinite(n) ? n : null;
+      distanceM = activity.id !== 'run' && mainIsDistance && Number.isFinite(n) ? n : null;
+      stationReps = mode === 'reps' && Number.isFinite(n)
+        ? parseInt(value, 10)
+        : (optionalDetails.stationReps ?? null);
+    }
+
     const res = await onLog({
       activity_id: activity.id,
       value: storedValue,
+      distance_km: distanceKm,
+      distance_m: distanceM,
+      duration_seconds: optionalDetails.durationSeconds ?? null,
+      pace_per_unit: optionalDetails.pacePerUnit ?? null,
+      station_weight_lbs: optionalDetails.stationWeightLbs ?? null,
+      station_weight_kg: optionalDetails.stationWeightKg ?? null,
+      station_reps: stationReps,
       hard: feltHard,
       is_lift: false,
       is_hyrox: false,
@@ -122,11 +214,21 @@ export default function LogWorkoutSheet({ open, onClose, onLog, onOpenLift, onOp
     handleClose();
   }
 
+  const valueStepTitle = !activity
+    ? 'Log'
+    : activity.unit === 'reps'
+      ? 'How many reps?'
+      : activity.id === 'run'
+        ? 'How far?'
+        : isErg
+          ? '500m split'
+          : 'How far?';
+
   const stepTitles = [
     'What did you do?',
     'Which station?',
-    activity?.unit === 'reps' ? 'How many reps?' : 'How far?',
-    'Did it feel hard?',
+    valueStepTitle,
+    'How did it feel?',
   ];
   const title = stepTitles[step];
 
@@ -206,22 +308,79 @@ export default function LogWorkoutSheet({ open, onClose, onLog, onOpenLift, onOp
 
       {step === 2 && activity && (
         <div className={styles.valueStep}>
-          <p className={styles.unitLabel}>
-            {activity.unit === 'reps' ? 'REPS' : activity.id === 'run' ? 'KM' : 'METERS'}
-          </p>
-          <div className={styles.inputRow}>
-            <input
-              ref={inputRef}
-              className={styles.input}
-              type="number"
-              inputMode={activity.id === 'run' ? 'decimal' : 'numeric'}
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              placeholder="0"
-              step={activity.id === 'run' ? '0.1' : '1'}
-            />
-          </div>
-          <p className={styles.targetHint}>{formatActivityTargetHint(activity)}</p>
+          {isErg ? (
+            <>
+              <p className={styles.unitLabel}>500M PACE (MM:SS)</p>
+              <div className={styles.inputRow}>
+                <input
+                  ref={inputRef}
+                  className={styles.input}
+                  type="number"
+                  inputMode="numeric"
+                  min="0"
+                  step="1"
+                  value={ergSplitMin}
+                  onChange={(e) => setErgSplitMin(e.target.value)}
+                  placeholder="mm"
+                />
+                <span className={styles.unitLabel} style={{ margin: '0 4px' }}>:</span>
+                <input
+                  className={styles.input}
+                  type="number"
+                  inputMode="numeric"
+                  min="0"
+                  max="59"
+                  step="1"
+                  value={ergSplitSec}
+                  onChange={(e) => setErgSplitSec(e.target.value)}
+                  placeholder="ss"
+                />
+              </div>
+              <OptionalFields
+                activityId={activity.id}
+                distancePreference={distanceUnit}
+                primaryValue=""
+                suppressTimePace
+                onChange={setOptionalDetails}
+              />
+              <p className={styles.targetHint}>
+                Target pace for your division ≈ {formatSplitSeconds(targetSplitSec)} /500m
+              </p>
+            </>
+          ) : (
+            <>
+              <p className={styles.unitLabel}>
+                {activity.unit === 'reps'
+                  ? 'REPS'
+                  : activity.id === 'run'
+                    ? 'KM'
+                    : 'METERS'}
+              </p>
+              <div className={styles.inputRow}>
+                <input
+                  ref={inputRef}
+                  className={styles.input}
+                  type="number"
+                  inputMode={activity.id === 'run' ? 'decimal' : 'numeric'}
+                  value={value}
+                  onChange={(e) => setValue(e.target.value)}
+                  placeholder="0"
+                  step={activity.id === 'run' ? '0.1' : '1'}
+                />
+              </div>
+              <OptionalFields
+                activityId={activity.id}
+                distancePreference={distanceUnit}
+                primaryValue={value}
+                onChange={setOptionalDetails}
+              />
+              <p className={styles.targetHint}>
+                {activity.id === 'run'
+                  ? `Race = ${formatDistanceHintMeters(activity.raceTarget, distanceUnit)} · Target = ${formatDistanceHintMeters(activity.target, distanceUnit)}`
+                  : formatActivityTargetHint(activity)}
+              </p>
+            </>
+          )}
           <button
             type="button"
             className={styles.nextBtn}
@@ -243,7 +402,7 @@ export default function LogWorkoutSheet({ open, onClose, onLog, onOpenLift, onOp
             >
               <span className={styles.hardEmoji} aria-hidden>😤</span>
               <span className={styles.hardMain}>YES</span>
-              <span className={styles.hardSub}>It was rough</span>
+              <span className={styles.hardSub}>Challenging / at my limit</span>
             </button>
             <button
               type="button"
@@ -252,7 +411,7 @@ export default function LogWorkoutSheet({ open, onClose, onLog, onOpenLift, onOp
             >
               <span className={styles.hardEmoji} aria-hidden>😎</span>
               <span className={styles.hardMain}>NO</span>
-              <span className={styles.hardSub}>Felt solid</span>
+              <span className={styles.hardSub}>Comfortable / in control</span>
             </button>
           </div>
           <button

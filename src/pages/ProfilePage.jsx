@@ -15,6 +15,8 @@ export default function ProfilePage({ profile, onUpdate, onSignOut }) {
   const [heightFt, setHeightFt] = useState('');
   const [heightIn, setHeightIn] = useState('');
   const [weightLbs, setWeightLbs] = useState('');
+  const [weightUnit, setWeightUnit] = useState('kg');
+  const [distanceUnit, setDistanceUnit] = useState('km');
   const [hyroxRaceType, setHyroxRaceType] = useState('');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -75,6 +77,8 @@ export default function ProfilePage({ profile, onUpdate, onSignOut }) {
       } else {
         setWeightLbs('');
       }
+      setWeightUnit(profile.weight_unit === 'lbs' ? 'lbs' : 'kg');
+      setDistanceUnit(profile.distance_unit === 'miles' ? 'miles' : 'km');
       setHyroxRaceType(profile.hyrox_race_type || '');
     }
   }, [profile]);
@@ -97,6 +101,8 @@ export default function ProfilePage({ profile, onUpdate, onSignOut }) {
         return ftInToCm(ft, inch);
       })(),
       weight_kg: weightLbs.trim() === '' ? null : lbsToKg(Number(weightLbs)),
+      weight_unit: weightUnit,
+      distance_unit: distanceUnit,
       hyrox_race_type: hyroxRaceType || null,
     });
 
@@ -196,6 +202,30 @@ export default function ProfilePage({ profile, onUpdate, onSignOut }) {
         </div>
 
         <div className={styles.statRow}>
+          <span className={styles.statLabel}>Weight unit</span>
+          <select
+            className={styles.statInput}
+            value={weightUnit}
+            onChange={(e) => setWeightUnit(e.target.value)}
+          >
+            <option value="kg">kg</option>
+            <option value="lbs">lbs</option>
+          </select>
+        </div>
+
+        <div className={styles.statRow}>
+          <span className={styles.statLabel}>Distance unit</span>
+          <select
+            className={styles.statInput}
+            value={distanceUnit}
+            onChange={(e) => setDistanceUnit(e.target.value)}
+          >
+            <option value="km">km</option>
+            <option value="miles">miles</option>
+          </select>
+        </div>
+
+        <div className={styles.statRow}>
           <span className={styles.statLabel}>Hyrox race type</span>
           <select
             className={styles.statInput}
@@ -221,6 +251,7 @@ export default function ProfilePage({ profile, onUpdate, onSignOut }) {
 
       <nav className={styles.nav}>
         <Link to="/app" className={styles.navLink}>Home</Link>
+        <Link to="/progress" className={styles.navLink}>Progress</Link>
         <Link to="/leaderboard" className={styles.navLink}>Board</Link>
         <Link to="/profile" className={`${styles.navLink} ${styles.active}`}>Profile</Link>
       </nav>

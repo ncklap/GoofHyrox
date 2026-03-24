@@ -1,0 +1,330 @@
+.section {
+  padding: 8px 0 14px;
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.08);
+}
+
+.closeBtn {
+  min-height: 48px;
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: #1a1a1c;
+  color: #d4f233;
+  padding: 0 14px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon {
+  font-size: 26px;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--text);
+}
+
+.sub {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--muted2);
+}
+
+.impactTrack {
+  margin-top: 10px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.impactFill {
+  height: 100%;
+  background: #d4f233;
+}
+
+.impactLabel {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #d4f233;
+}
+
+.sectionTitle {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: #fff;
+}
+
+.kvList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.kv {
+  min-height: 48px;
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: #1a1a1c;
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #d9d9d9;
+  font-size: 13px;
+}
+
+.muted {
+  margin: 0;
+  color: var(--muted2);
+  font-size: 12px;
+}
+
+.prBanner {
+  border: 0.5px solid rgba(212, 242, 51, 0.45);
+  background: rgba(212, 242, 51, 0.08);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #d4f233;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.summary {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.good { color: #7df19d; }
+.bad { color: #b8b8b8; }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  color: #d6d6d6;
+}
+
+.table th,
+.table td {
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.08);
+  padding: 8px 6px;
+  text-align: left;
+}
+
+.table th {
+  color: var(--muted2);
+  font-weight: 600;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.badgeUp {
+  color: #7df19d;
+  background: rgba(125, 241, 157, 0.12);
+}
+
+.badgeDown {
+  color: #ff6f87;
+  background: rgba(255, 111, 135, 0.12);
+}
+
+.toggleRow {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.toggleBtn {
+  min-height: 36px;
+  border-radius: 999px;
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
+  background: #1a1a1c;
+  color: #b9b9b9;
+  padding: 0 12px;
+  cursor: pointer;
+}
+
+.toggleBtnActive {
+  color: #1a1a1c;
+  background: #d4f233;
+  border-color: #d4f233;
+}
+
+.chartWrap {
+  margin-top: 4px;
+}
+
+.axisHint {
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: var(--muted2);
+}
+
+.editFooter {
+  text-align: center;
+  padding: 20px 12px 28px;
+  margin-top: 4px;
+  border-top: 0.5px solid rgba(255, 255, 255, 0.08);
+}
+
+.editFooterError {
+  margin: 0 0 12px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: #ff6f87;
+  text-align: center;
+}
+
+.editFooterActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.editTextLink {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  color: #d4f233;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.editTextLink:hover {
+  color: #e8f96a;
+}
+
+.editTextLink:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.editTextLinkMuted {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--muted2);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.editTextLinkMuted:hover {
+  color: #c4c4c4;
+}
+
+.editTextLinkMuted:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.editFooterSep {
+  color: var(--muted2);
+  font-size: 15px;
+  user-select: none;
+}
+
+.editForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.formHint {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--muted2);
+}
+
+.formLabel {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted2);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: #c8c8c8;
+}
+
+.formInput {
+  min-height: 44px;
+  border-radius: 12px;
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  background: #121214;
+  color: #f2f2f2;
+  padding: 0 12px;
+  font-size: 15px;
+  font-family: var(--font-body);
+}
+
+.hardPickRow,
+.lengthPickRow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pickBtn {
+  min-height: 48px;
+  text-align: left;
+  border-radius: 12px;
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  background: #1a1a1c;
+  color: #d0d0d0;
+  padding: 10px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+
+.pickBtnActive {
+  border-color: #d4f233;
+  color: #d4f233;
+  background: rgba(212, 242, 51, 0.08);
+}
+
+.splitRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}

@@ -1,6 +1,25 @@
-import { ACTIVITIES, CATEGORIES, LIFTS } from './constants.js';
+import {
+  ACTIVITIES,
+  CATEGORIES,
+  LIFTS,
+  CATEGORY_SUM_MAX,
+  ROW_SKI_TARGETS,
+  DEFAULT_DIVISION_KEY,
+  resolveDivisionKeyFromProfile,
+  getDivisionTargets,
+  LEGACY_ERG_METERS_THRESHOLD,
+} from './constants.js';
 
 const RECENCY_DAYS = 15;
+
+/** Hyrox sim: fixed budget per length, split across categories by max weights */
+export const HYROX_SESSION_POINTS = {
+  full: 200,
+  half: 80,
+  quarter: 30,
+};
+const BAR_KG = 20;
+const LBS_PER_KG = 2.205;
 
 function isRecent(loggedAt) {
   const cutoff = new Date();
@@ -15,35 +34,178 @@ function getRunBase(meters) {
   return 5;
 }
 
-function computeSessionPoints(activity, value, hard) {
-  const base = activity.id === 'run' ? getRunBase(value) : 50;
-  const ratio = value / activity.target;
-  const volumeScore = ratio >= 0.8 ? 1.0 : ratio;
-  const intensityMultiplier = hard ? 0.5 : 1.0;
-  return base * volumeScore * intensityMultiplier;
+/** Total session points for one Hyrox log (before category split) */
+export function getHyroxSessionPoints(session) {
+  const len = session?.hyrox_length;
+  const base =
+    len === 'full' ? HYROX_SESSION_POINTS.full :
+      len === 'half' ? HYROX_SESSION_POINTS.half :
+        HYROX_SESSION_POINTS.quarter;
+  const effortMult = session?.hyrox_intensity === 'hard' ? 0.6 : 1.0;
+  return base * effortMult;
 }
 
-export function computeScores(workouts) {
+function stationWeightKgFromWorkout(w) {
+  if (Number.isFinite(Number(w?.station_weight_kg)) && Number(w.station_weight_kg) > 0) {
+    return Number(w.station_weight_kg);
+  }
+  if (Number.isFinite(Number(w?.station_weight_lbs)) && Number(w.station_weight_lbs) > 0) {
+    return Number(w.station_weight_lbs) / LBS_PER_KG;
+  }
+  return null;
+}
+
+/** Sled: optional per-side kg in DB → total bar + plates load */
+function sledTotalKg(w) {
+  const perSide = stationWeightKgFromWorkout(w);
+  if (perSide === null) return null;
+  return perSide * 2 + BAR_KG;
+}
+
+function volumeScoreFromRatio(ratio) {
+  if (!Number.isFinite(ratio) || ratio <= 0) return 0;
+  return ratio >= 0.8 ? 1.0 : ratio;
+}
+
+function legacyErgPoints(w, activity, divisionKey) {
+  const div = getDivisionTargets(divisionKey);
+  const distTarget =
+    activity.id === 'rowing'
+      ? (div.row?.distance ?? 1000)
+      : (div.ski_erg?.distance ?? 1000);
+  const meters = Number(w.value);
+  if (!Number.isFinite(meters) || meters <= 0) return 0;
+  const ratio = meters / distTarget;
+  const volumeScore = volumeScoreFromRatio(ratio);
+  const intensityMult = w.hard ? 0.6 : 1.0;
+  return 50 * volumeScore * intensityMult;
+}
+
+function paceErgPoints(w, divisionKey) {
+  const targetSplit =
+    ROW_SKI_TARGETS[divisionKey] ?? ROW_SKI_TARGETS[DEFAULT_DIVISION_KEY];
+  const actualSplit = Number(w.value);
+  if (!Number.isFinite(actualSplit) || actualSplit <= 0) return 0;
+  const ratio = targetSplit / actualSplit;
+  const volumeScore = Math.min(Math.max(ratio, 0), 1);
+  const intensityMult = w.hard ? 0.6 : 1.0;
+  return 50 * volumeScore * intensityMult;
+}
+
+function computeStationSessionPoints(w, activity, profile) {
+  const divisionKey = resolveDivisionKeyFromProfile(profile);
+  const div = getDivisionTargets(divisionKey);
+  const hard = !!w.hard;
+  const intensityMultStation = hard ? 0.5 : 1.0;
+
+  if (activity.id === 'run') {
+    const base = getRunBase(w.value);
+    const ratio = w.value / activity.target;
+    const volumeScore = volumeScoreFromRatio(ratio);
+    return base * volumeScore * intensityMultStation;
+  }
+
+  if (activity.id === 'skierg' || activity.id === 'rowing') {
+    const val = Number(w.value);
+    if (!Number.isFinite(val)) return 0;
+    if (val >= LEGACY_ERG_METERS_THRESHOLD) {
+      return legacyErgPoints(w, activity, divisionKey);
+    }
+    return paceErgPoints(w, divisionKey);
+  }
+
+  if (activity.id === 'burpee') {
+    const targetM = div.burpee?.distance ?? activity.target;
+    const ratio = Number(w.value) / targetM;
+    const volumeScore = volumeScoreFromRatio(ratio);
+    return 50 * volumeScore * intensityMultStation;
+  }
+
+  if (activity.id === 'wallball') {
+    const targetReps = div.wall_balls?.reps ?? activity.target;
+    const reps = Number(w.station_reps ?? w.value);
+    if (!Number.isFinite(reps) || reps <= 0) return 0;
+    const ratio = reps / targetReps;
+    const volumeScore = volumeScoreFromRatio(ratio);
+    return 50 * volumeScore * intensityMultStation;
+  }
+
+  if (activity.id === 'sledpush') {
+    const targetKg = div.sled_push;
+    const totalKg = sledTotalKg(w);
+    let ratio;
+    if (totalKg !== null && targetKg) {
+      ratio = Math.min(1, totalKg / targetKg);
+    } else {
+      ratio = Number(w.value) / activity.target;
+    }
+    const volumeScore = volumeScoreFromRatio(ratio);
+    return 50 * volumeScore * intensityMultStation;
+  }
+
+  if (activity.id === 'sledpull') {
+    const targetKg = div.sled_pull;
+    const totalKg = sledTotalKg(w);
+    let ratio;
+    if (totalKg !== null && targetKg) {
+      ratio = Math.min(1, totalKg / targetKg);
+    } else {
+      ratio = Number(w.value) / activity.target;
+    }
+    const volumeScore = volumeScoreFromRatio(ratio);
+    return 50 * volumeScore * intensityMultStation;
+  }
+
+  if (activity.id === 'farmers') {
+    const targetKg = div.farmers_carry;
+    const kg = stationWeightKgFromWorkout(w);
+    let ratio;
+    if (kg !== null && targetKg) {
+      ratio = Math.min(1, kg / targetKg);
+    } else {
+      ratio = Number(w.value) / activity.target;
+    }
+    const volumeScore = volumeScoreFromRatio(ratio);
+    return 50 * volumeScore * intensityMultStation;
+  }
+
+  if (activity.id === 'sandbag') {
+    const targetKg = div.sandbag_lunges;
+    const kg = stationWeightKgFromWorkout(w);
+    let ratio;
+    if (kg !== null && targetKg) {
+      ratio = Math.min(1, kg / targetKg);
+    } else {
+      ratio = Number(w.value) / activity.target;
+    }
+    const volumeScore = volumeScoreFromRatio(ratio);
+    return 50 * volumeScore * intensityMultStation;
+  }
+
+  const ratio = Number(w.value) / activity.target;
+  const volumeScore = volumeScoreFromRatio(ratio);
+  return 50 * volumeScore * intensityMultStation;
+}
+
+export function computeScores(workouts, options = {}) {
+  const { profile = null } = options;
   const recentWorkouts = workouts.filter(w => isRecent(w.logged_at));
 
-  // Initialize category scores
   const catScores = {};
   for (const cat of Object.keys(CATEGORIES)) {
     catScores[cat] = 0;
   }
 
-  // 1. Activity workouts — group by activity, take top N (cap), sum
   for (const activity of ACTIVITIES) {
     const sessions = recentWorkouts
       .filter(w => !w.is_lift && !w.is_hyrox && w.activity_id === activity.id)
-      .map(w => computeSessionPoints(activity, w.value, w.hard))
+      .map(w => computeStationSessionPoints(w, activity, profile))
       .sort((a, b) => b - a)
       .slice(0, activity.cap);
 
     catScores[activity.cat] += sessions.reduce((s, v) => s + v, 0);
   }
 
-  // 2. Lift workouts — group by lift_id, take top 2 per lift, distribute points
   for (const lift of LIFTS) {
     const sessions = recentWorkouts
       .filter(w => w.is_lift && w.lift_id === lift.id)
@@ -58,28 +220,20 @@ export function computeScores(workouts) {
     }
   }
 
-  // 3. Hyrox workouts — apply completion % × intensity to each category
   const hyroxSessions = recentWorkouts.filter(w => w.is_hyrox);
   for (const session of hyroxSessions) {
-    const completionPct =
-      session.hyrox_length === 'full' ? 1.0 :
-      session.hyrox_length === 'half' ? 0.5 : 0.25;
-    const intensityMult = session.hyrox_intensity === 'hard' ? 0.75 : 1.0;
-
+    const sessionPts = getHyroxSessionPoints(session);
     for (const [cat, info] of Object.entries(CATEGORIES)) {
-      catScores[cat] += info.max * completionPct * intensityMult;
+      catScores[cat] += sessionPts * (info.max / CATEGORY_SUM_MAX);
     }
   }
 
-  // 4. Cap each category at its max
   for (const [cat, info] of Object.entries(CATEGORIES)) {
     catScores[cat] = Math.min(catScores[cat], info.max);
   }
 
-  // 5. Compute raw total
   let total = Object.values(catScores).reduce((s, v) => s + v, 0);
 
-  // 6. Missing core penalty
   const coreZeros = Object.entries(CATEGORIES)
     .filter(([, info]) => info.core)
     .filter(([cat]) => catScores[cat] === 0)
@@ -100,7 +254,6 @@ export function computeScores(workouts) {
 
 /** Design-system verdict tone class (maps to CSS module classes) */
 export function getVerdict(score, hasWorkouts) {
-  // If the user hasn't logged anything yet, keep the onboarding tone.
   if (!hasWorkouts && score === 0) {
     return {
       label: 'WHY ARE YOU HERE.',
@@ -110,7 +263,6 @@ export function getVerdict(score, hasWorkouts) {
     };
   }
 
-  // Score is in [0..400]. Use the provided range buckets.
   if (score >= 1 && score <= 20) {
     return { label: 'YOU WILL DIE', subtext: 'YOU ARE NOT READY.', color: 'var(--accent-red)', tone: 'notReady' };
   }
@@ -232,17 +384,10 @@ export function getVerdict(score, hasWorkouts) {
 }
 
 /** Approximate session points for a single log row (display in workout list) */
-export function getWorkoutSessionPoints(w) {
+export function getWorkoutSessionPoints(w, options = {}) {
+  const { profile = null } = options;
   if (w.is_hyrox) {
-    const completionPct =
-      w.hyrox_length === 'full' ? 1.0 :
-      w.hyrox_length === 'half' ? 0.5 : 0.25;
-    const intensityMult = w.hyrox_intensity === 'hard' ? 0.75 : 1.0;
-    let sum = 0;
-    for (const [, info] of Object.entries(CATEGORIES)) {
-      sum += info.max * completionPct * intensityMult;
-    }
-    return Math.round(sum);
+    return Math.round(getHyroxSessionPoints(w));
   }
   if (w.is_lift) {
     const lift = LIFTS.find(l => l.id === w.lift_id);
@@ -251,7 +396,7 @@ export function getWorkoutSessionPoints(w) {
   }
   const activity = ACTIVITIES.find(a => a.id === w.activity_id);
   if (!activity) return 0;
-  return Math.round(computeSessionPoints(activity, w.value, w.hard));
+  return Math.round(computeStationSessionPoints(w, activity, profile));
 }
 
 export function getDaysUntilRace(raceDate) {

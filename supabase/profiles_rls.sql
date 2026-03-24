@@ -10,6 +10,8 @@ create table if not exists public.profiles (
   gender text,
   height_cm numeric,
   weight_kg numeric,
+  weight_unit text default 'kg',
+  distance_unit text default 'km',
   hyrox_race_type text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -55,4 +57,6 @@ alter table public.profiles
   add column if not exists gender text,
   add column if not exists height_cm numeric,
   add column if not exists weight_kg numeric,
+  add column if not exists weight_unit text default 'kg',
+  add column if not exists distance_unit text default 'km',
   add column if not exists hyrox_race_type text;

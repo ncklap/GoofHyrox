@@ -11,6 +11,13 @@ create table if not exists public.workouts (
   activity_id text,
   value numeric,
   hard boolean,
+  distance_km numeric,
+  distance_m numeric,
+  duration_seconds integer,
+  pace_per_unit numeric,
+  station_weight_lbs numeric,
+  station_weight_kg numeric,
+  station_reps integer,
 
   -- Lift workouts
   is_lift boolean not null default false,
@@ -67,4 +74,13 @@ create policy "workouts_delete_own"
 
 create index if not exists workouts_user_logged_at_idx
   on public.workouts (user_id, logged_at desc);
+
+alter table public.workouts
+  add column if not exists distance_km numeric,
+  add column if not exists distance_m numeric,
+  add column if not exists duration_seconds integer,
+  add column if not exists pace_per_unit numeric,
+  add column if not exists station_weight_lbs numeric,
+  add column if not exists station_weight_kg numeric,
+  add column if not exists station_reps integer;
 
