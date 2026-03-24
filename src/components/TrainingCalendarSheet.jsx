@@ -267,6 +267,7 @@ export default function TrainingCalendarSheet({
             if (cell.blank) return <div key={cell.key} className={styles.blankCell} />;
 
             const hasAny = cell.workouts.length > 0;
+            const isMultiWorkoutDay = cell.workouts.length > 1;
             return (
               <button
                 key={cell.key}
@@ -277,10 +278,14 @@ export default function TrainingCalendarSheet({
               >
                 {hasAny ? (
                   <>
-                    <div className={styles.emojiSlot}>
-                      {cell.hasCardio && <span className={styles.emojiCardio}>🏃</span>}
-                      {cell.hasStrength && <span className={styles.emojiStrength}>💪</span>}
-                    </div>
+                    {isMultiWorkoutDay ? (
+                      <span className={styles.workoutCount}>{cell.workouts.length}</span>
+                    ) : (
+                      <div className={styles.emojiSlot}>
+                        {cell.hasCardio && <span className={styles.emojiCardio}>🏃</span>}
+                        {cell.hasStrength && <span className={styles.emojiStrength}>💪</span>}
+                      </div>
+                    )}
                     <span className={styles.dayNumSmall}>{cell.day}</span>
                   </>
                 ) : (

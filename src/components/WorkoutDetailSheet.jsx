@@ -82,17 +82,20 @@ function getErgSplitSecondsFromWorkout(workout) {
 }
 
 function getPaceFromWorkout(workout) {
+  if (workout?.pace_per_unit === null || workout?.pace_per_unit === undefined || workout?.pace_per_unit === '') return null;
   return Number.isFinite(Number(workout?.pace_per_unit)) ? Number(workout.pace_per_unit) : null;
 }
 
 function getWeightFromWorkout(workout) {
   if (HIDE_WEIGHT_REPS_ACTIVITIES.has(workout?.activity_id)) return null;
+  if (workout?.station_weight_lbs === null || workout?.station_weight_lbs === undefined || workout?.station_weight_lbs === '') return null;
   if (Number.isFinite(Number(workout?.station_weight_lbs))) return Number(workout.station_weight_lbs);
   return null;
 }
 
 function getRepsFromWorkout(workout) {
   if (HIDE_WEIGHT_REPS_ACTIVITIES.has(workout?.activity_id)) return null;
+  if (workout?.station_reps === null || workout?.station_reps === undefined || workout?.station_reps === '') return null;
   if (Number.isFinite(Number(workout?.station_reps))) return Number(workout.station_reps);
   return null;
 }
@@ -131,6 +134,17 @@ function formatChartTooltipValue(value, metric, workout, distanceUnit) {
     return `${converted.toFixed(2)} ${distanceUnit === 'miles' ? 'mi' : 'km'}`;
   }
   return value;
+}
+
+function chartMetricLabel(metric, workout, distanceUnit) {
+  if (metric === 'duration') return 'Duration';
+  if (metric === 'weight') return 'Weight (lbs)';
+  if (metric === 'reps') return 'Reps';
+  if (metric === 'distance') {
+    if (workout?.activity_id === 'run') return `Distance (${distanceUnit === 'miles' ? 'mi' : 'km'})`;
+    return 'Distance (m)';
+  }
+  return 'Measurement';
 }
 
 function impactFromPct(pct) {
@@ -258,8 +272,10 @@ function buildWorkoutEditDraft(workout, distanceUnit, weightUnit) {
     ergSs,
     primary,
     duration_seconds: workout.duration_seconds != null ? String(workout.duration_seconds) : '',
-    pace_per_unit: Number.isFinite(Number(workout.pace_per_unit)) ? String(workout.pace_per_unit) : '',
-    station_weight_lbs: Number.isFinite(Number(workout.station_weight_lbs))
+    pace_per_unit: workout.pace_per_unit !== null && workout.pace_per_unit !== undefined && workout.pace_per_unit !== '' && Number.isFinite(Number(workout.pace_per_unit))
+      ? String(workout.pace_per_unit)
+      : '',
+    station_weight_lbs: workout.station_weight_lbs !== null && workout.station_weight_lbs !== undefined && workout.station_weight_lbs !== '' && Number.isFinite(Number(workout.station_weight_lbs))
       ? String(Math.round(workout.station_weight_lbs))
       : '',
     station_reps: workout.station_reps != null ? String(workout.station_reps) : '',
@@ -820,8 +836,10 @@ export default function WorkoutDetailSheet({
               </thead>
               <tbody>
                 {currentSets.map((s) => {
-                  const perSide = Math.round(Number(s.weight_kg || 0) * 2.205);
-                  const total = Math.round((((Number(s.weight_kg || 0) * 2.205) * 2) + 45) / 5) * 5;
+                  // lift_sets.weight_kg stores TOTAL barbell weight, not per-side plate weight.
+                  const totalLbsRaw = Number(s.weight_kg || 0) * 2.205;
+                  const perSide = Math.max(0, Math.round((totalLbsRaw - 45) / 2));
+                  const total = (perSide * 2) + 45;
                   return (
                     <tr key={s.id}>
                       <td>{s.set_number}</td>
@@ -854,9 +872,9 @@ export default function WorkoutDetailSheet({
             {workout.activity_id !== 'skierg' && workout.activity_id !== 'rowing' && Number.isFinite(Number(workout.distance_km)) && <div className={styles.kv}><span>Distance</span><span>{Number(workout.distance_km).toFixed(2)}km</span></div>}
             {workout.activity_id !== 'skierg' && workout.activity_id !== 'rowing' && Number.isFinite(Number(workout.distance_m)) && <div className={styles.kv}><span>Distance</span><span>{Math.round(Number(workout.distance_m))}m</span></div>}
             {formatDuration(workout.duration_seconds) && <div className={styles.kv}><span>Time</span><span>{formatDuration(workout.duration_seconds)}</span></div>}
-            {Number.isFinite(Number(workout.pace_per_unit)) && <div className={styles.kv}><span>Pace</span><span>{Number(workout.pace_per_unit).toFixed(2)}</span></div>}
-            {!HIDE_WEIGHT_REPS_ACTIVITIES.has(workout.activity_id) && Number.isFinite(Number(workout.station_weight_lbs)) && <div className={styles.kv}><span>Weight</span><span>{Math.round(Number(workout.station_weight_lbs))}lbs</span></div>}
-            {!HIDE_WEIGHT_REPS_ACTIVITIES.has(workout.activity_id) && Number.isFinite(Number(workout.station_reps)) && <div className={styles.kv}><span>Reps</span><span>{Math.round(Number(workout.station_reps))}</span></div>}
+            {workout.pace_per_unit !== null && workout.pace_per_unit !== undefined && workout.pace_per_unit !== '' && Number.isFinite(Number(workout.pace_per_unit)) && <div className={styles.kv}><span>Pace</span><span>{Number(workout.pace_per_unit).toFixed(2)}</span></div>}
+            {!HIDE_WEIGHT_REPS_ACTIVITIES.has(workout.activity_id) && workout.station_weight_lbs !== null && workout.station_weight_lbs !== undefined && workout.station_weight_lbs !== '' && Number.isFinite(Number(workout.station_weight_lbs)) && <div className={styles.kv}><span>Weight</span><span>{Math.round(Number(workout.station_weight_lbs))}lbs</span></div>}
+            {!HIDE_WEIGHT_REPS_ACTIVITIES.has(workout.activity_id) && workout.station_reps !== null && workout.station_reps !== undefined && workout.station_reps !== '' && Number.isFinite(Number(workout.station_reps)) && <div className={styles.kv}><span>Reps</span><span>{Math.round(Number(workout.station_reps))}</span></div>}
             {workout.is_hyrox && <div className={styles.kv}><span>Length</span><span>{workout.hyrox_length || '—'}</span></div>}
             {workout.is_hyrox && (
               <div className={styles.kv}>
@@ -952,7 +970,7 @@ export default function WorkoutDetailSheet({
                 <Tooltip
                   contentStyle={{ background: '#1a1a1c', border: '0.5px solid rgba(255,255,255,0.08)' }}
                   labelStyle={{ color: '#cfcfcf' }}
-                  formatter={(value) => formatChartTooltipValue(value, metric, workout, distanceUnit)}
+                  formatter={(value) => [formatChartTooltipValue(value, metric, workout, distanceUnit), chartMetricLabel(metric, workout, distanceUnit)]}
                 />
                 <Line type="monotone" dataKey="value" stroke="#d4f233" strokeWidth={2} dot={{ r: 3 }} />
               </LineChart>

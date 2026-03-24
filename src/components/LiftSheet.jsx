@@ -10,8 +10,8 @@ import styles from './LiftSheet.module.css';
 
 const LIFT_TRACKING_CACHE_KEY = 'goofhyrox_lift_tracking_cache_v1';
 const BAR_WEIGHT_LBS = 45;
-const BAR_WEIGHT_KG = 20;
 const LBS_PER_KG = 2.205;
+const BAR_WEIGHT_KG = BAR_WEIGHT_LBS / LBS_PER_KG;
 let nextSetRowId = 1;
 
 function makeSetRow(seed = {}) {

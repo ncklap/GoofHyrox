@@ -234,6 +234,17 @@
   padding: 2px 0 0;
 }
 
+.weekCounter {
+  margin: 2px 0 0;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--muted2);
+  text-transform: uppercase;
+}
+
 .catGrid {
   display: flex;
   flex-direction: column;

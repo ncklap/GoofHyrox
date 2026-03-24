@@ -40,6 +40,24 @@ function computeDayStreak(workouts) {
   return streak;
 }
 
+function computeWorkoutDaysThisWeek(workouts) {
+  if (!Array.isArray(workouts) || workouts.length === 0) return 0;
+  const now = new Date();
+  const start = new Date(now);
+  start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() - start.getDay()); // Sunday start
+
+  const end = new Date(start);
+  end.setDate(start.getDate() + 7);
+
+  const unique = new Set();
+  for (const w of workouts) {
+    const d = new Date(w.logged_at);
+    if (d >= start && d < end) unique.add(toLocalDayKey(w.logged_at));
+  }
+  return unique.size;
+}
+
 export default function MainApp({ profile, onSignOut }) {
   const { workouts, addWorkout, deleteWorkout, updateWorkout } = useWorkouts(profile?.id);
   const weightUnit = profile?.weight_unit === 'lbs' ? 'lbs' : 'kg';
@@ -58,6 +76,7 @@ export default function MainApp({ profile, onSignOut }) {
   const daysLeft = getDaysUntilRace(profile?.race_date);
   const showCapWarning = scores.coreZeros >= 1;
   const dayStreak = useMemo(() => computeDayStreak(workouts), [workouts]);
+  const workoutDaysThisWeek = useMemo(() => computeWorkoutDaysThisWeek(workouts), [workouts]);
 
   const handleLog = useCallback(async (data) => {
     const toastMsg = data.__toast;
@@ -210,6 +229,9 @@ export default function MainApp({ profile, onSignOut }) {
         >
           View all workouts
         </button>
+        <p className={styles.weekCounter}>
+          {workoutDaysThisWeek} / 7 days worked out this week
+        </p>
       </section>
 
       <nav className={styles.nav}>

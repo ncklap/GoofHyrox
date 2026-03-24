@@ -2,6 +2,21 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase.js';
 // This app uses real Supabase auth in all environments.
 
+const OPTIONAL_PROFILE_COLUMNS = [
+  'weight_unit',
+  'distance_unit',
+  'hyrox_race_type',
+  'gender',
+  'height_cm',
+  'weight_kg',
+  'race_date',
+];
+
+function isMissingColumnError(error) {
+  const msg = String(error?.message || '').toLowerCase();
+  return msg.includes('column') && msg.includes('does not exist');
+}
+
 export function useAuth() {
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -77,16 +92,39 @@ export function useAuth() {
 
   const upsertProfile = useCallback(async (profileData) => {
     if (!session) return { data: null, error: new Error('Not signed in') };
-    const { data, error } = await supabase
-      .from('profiles')
-      .upsert(
-        { id: session.user.id, ...profileData },
-        { onConflict: 'id' }
-      )
-      .select()
-      .single();
-    if (!error) setProfile(data);
-    return { data, error };
+    const payload = { id: session.user.id, ...profileData };
+
+    let attemptPayload = { ...payload };
+    // Retry by stripping optional columns for backward-compatible schemas.
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const { data, error } = await supabase
+        .from('profiles')
+        .upsert(
+          attemptPayload,
+          { onConflict: 'id' }
+        )
+        .select()
+        .single();
+
+      if (!error) {
+        setProfile(data);
+        return { data, error: null };
+      }
+
+      if (isMissingColumnError(error)) {
+        let stripped = false;
+        for (const col of OPTIONAL_PROFILE_COLUMNS) {
+          if (col in attemptPayload) {
+            delete attemptPayload[col];
+            stripped = true;
+          }
+        }
+        if (stripped) continue;
+      }
+
+      return { data: null, error };
+    }
   }, [session]);
 
   return {

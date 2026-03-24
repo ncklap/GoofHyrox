@@ -110,6 +110,21 @@
   z-index: 1;
 }
 
+.workoutCount {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 3px;
+  background: rgba(212, 242, 51, 0.15);
+  color: #d4f233;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 800;
+}
+
 .dayNum {
   font-family: var(--font-body);
   font-size: 12px;
